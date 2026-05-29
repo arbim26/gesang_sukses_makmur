@@ -18,6 +18,7 @@
             <thead>
                 <tr>
                     <th>ID Customer</th>
+                    <th>Nama Perusahaan</th>
                     <th>PIC</th>
                     <th style="width:130px;">Aksi</th>
                 </tr>
@@ -26,6 +27,7 @@
                 @forelse($customers as $c)
                 <tr>
                     <td><code style="font-size:.8rem;">{{ $c->Id_Cust }}</code></td>
+                    <td>{{ $c->Nama }}</td>
                     <td>{{ $c->PIC }}</td>
                     <td>
                         <a href="{{ route('customer.show', $c->Id_Cust) }}"

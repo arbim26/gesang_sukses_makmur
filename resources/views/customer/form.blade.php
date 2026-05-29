@@ -32,6 +32,14 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="form-label">Nama Perusahaan <span class="text-danger">*</span></label>
+                        <input type="text" name="Nama" class="form-control @error('nama') is-invalid @enderror"
+                            value="{{ old('PIC', $customer->Nama ?? '') }}"
+                            placeholder="Nama Perusahaan" required>
+                        @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="mb-4">
                         <label class="form-label">PIC (Person in Charge) <span class="text-danger">*</span></label>
                         <input type="text" name="PIC" class="form-control @error('PIC') is-invalid @enderror"
                             value="{{ old('PIC', $customer->PIC ?? '') }}"

@@ -128,6 +128,25 @@ class InvoiceController extends Controller
             ->with('success', 'Invoice berhasil dihapus.');
     }
 
+    public function print(string $id)
+    {
+        $invoice = Invoice::with([
+            'purchaseOrder.customer',
+            'purchaseOrder.details.barang',
+            'ceo',
+            'sekretaris',
+            'rekening',
+        ])->findOrFail($id);
+
+        $subTotal   = $invoice->purchaseOrder->Sub_Total;
+        $ppn        = $invoice->purchaseOrder->PPN;
+        $diskon     = $invoice->discount;
+        $afterDisc  = $subTotal * (1 - $diskon / 100);
+        $grandTotal = round($afterDisc * (1 + $ppn / 100), 2);
+
+        return view('invoice.print', compact('invoice', 'subTotal', 'ppn', 'diskon', 'afterDisc', 'grandTotal'));
+    }
+
     // ── Helper ────────────────────────────────────────────────
     private function formData(?string $currentNoPO = null): array
     {

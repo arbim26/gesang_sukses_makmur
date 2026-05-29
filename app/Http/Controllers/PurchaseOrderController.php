@@ -28,42 +28,26 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'No_PO'                       => 'required|unique:purchase_orders,No_PO|max:30',
-            'Id_Cust'                     => 'required|exists:customers,Id_Cust',
-            'PO_Date'                     => 'required|date',
-            'Delivery_date'               => 'nullable|date|after_or_equal:PO_Date',
-            'Note'                        => 'nullable|string',
-            'details'                     => 'required|array|min:1',
-            'details.*.No_Barang'         => 'required|exists:barangs,Kode_Barang',
-            'details.*.Qty'               => 'required|integer|min:1',
-            'details.*.Metode'            => 'required|in:Transfer,Cash,Kredit',
+            'No_PO'        => 'required|unique:purchase_orders,No_PO|max:30',
+            'Id_Cust'      => 'required|exists:customers,Id_Cust',
+            'PO_Date'      => 'required|date',
+            'Delivery_date'=> 'nullable|date|after_or_equal:PO_Date',
+            'Note'         => 'nullable|string',
         ]);
 
-        DB::transaction(function () use ($request) {
-            // Hitung Sub_Total dari detail
-            [$subTotal, $detailRows] = $this->buildDetails($request->details);
+        PurchaseOrder::create([
+            'No_PO'         => $request->No_PO,
+            'Id_Cust'       => $request->Id_Cust,
+            'PO_Date'       => $request->PO_Date,
+            'Delivery_date' => $request->Delivery_date,
+            'Sub_Total'     => 0,
+            'PPN'           => 11,
+            'Grand_Total'   => 0,
+            'Note'          => $request->Note,
+        ]);
 
-            $ppn        = 11;
-            $grandTotal = round($subTotal * (1 + $ppn / 100), 2);
-
-            $po = PurchaseOrder::create([
-                'No_PO'         => $request->No_PO,
-                'Id_Cust'       => $request->Id_Cust,
-                'PO_Date'       => $request->PO_Date,
-                'Delivery_date' => $request->Delivery_date,
-                'Sub_Total'     => $subTotal,
-                'PPN'           => $ppn,
-                'Grand_Total'   => $grandTotal,
-                'Note'          => $request->Note,
-            ]);
-
-            foreach ($detailRows as $row) {
-                DetailInvoice::create(array_merge($row, ['No_PO' => $po->No_PO]));
-            }
-        });
-
-        return redirect()->route('purchase-order.index')
-            ->with('success', 'Purchase Order berhasil dibuat.');
+        return redirect()->route('purchase-order.detail.create', $request->No_PO)
+            ->with('success', 'Purchase Order berhasil dibuat. Silakan tambahkan detail barang.');
     }
 
     public function show(string $id)
@@ -103,38 +87,18 @@ class PurchaseOrderController extends Controller
         }
 
         $request->validate([
-            'Id_Cust'             => 'required|exists:customers,Id_Cust',
-            'PO_Date'             => 'required|date',
-            'Delivery_date'       => 'nullable|date|after_or_equal:PO_Date',
-            'Note'                => 'nullable|string',
-            'details'             => 'required|array|min:1',
-            'details.*.No_Barang' => 'required|exists:barangs,Kode_Barang',
-            'details.*.Qty'       => 'required|integer|min:1',
-            'details.*.Metode'    => 'required|in:Transfer,Cash,Kredit',
+            'Id_Cust'      => 'required|exists:customers,Id_Cust',
+            'PO_Date'      => 'required|date',
+            'Delivery_date'=> 'nullable|date|after_or_equal:PO_Date',
+            'Note'         => 'nullable|string',
         ]);
 
-        DB::transaction(function () use ($request, $po) {
-            [$subTotal, $detailRows] = $this->buildDetails($request->details);
-
-            $ppn        = 11;
-            $grandTotal = round($subTotal * (1 + $ppn / 100), 2);
-
-            $po->update([
-                'Id_Cust'       => $request->Id_Cust,
-                'PO_Date'       => $request->PO_Date,
-                'Delivery_date' => $request->Delivery_date,
-                'Sub_Total'     => $subTotal,
-                'PPN'           => $ppn,
-                'Grand_Total'   => $grandTotal,
-                'Note'          => $request->Note,
-            ]);
-
-            // Hapus detail lama, insert ulang
-            $po->details()->delete();
-            foreach ($detailRows as $row) {
-                DetailInvoice::create(array_merge($row, ['No_PO' => $po->No_PO]));
-            }
-        });
+        $po->update([
+            'Id_Cust'       => $request->Id_Cust,
+            'PO_Date'       => $request->PO_Date,
+            'Delivery_date' => $request->Delivery_date,
+            'Note'          => $request->Note,
+        ]);
 
         return redirect()->route('purchase-order.show', $po->No_PO)
             ->with('success', 'Purchase Order berhasil diperbarui.');
@@ -159,6 +123,86 @@ class PurchaseOrderController extends Controller
     }
 
     // ── Helper: hitung totals & siapkan baris detail ────────
+    // ── Halaman khusus tambah/hapus detail barang ───────────
+
+    public function detailCreate(string $id)
+    {
+        $po = PurchaseOrder::with(['customer', 'details.barang'])->findOrFail($id);
+
+        if ($po->invoices()->exists()) {
+            return redirect()->route('purchase-order.show', $id)
+                ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
+        }
+
+        $barangs = Barang::orderBy('Nama_Barang')->get();
+
+        return view('purchase-order.detail', compact('po', 'barangs'));
+    }
+
+    public function detailStore(Request $request, string $id)
+    {
+        $po = PurchaseOrder::with('details')->findOrFail($id);
+
+        if ($po->invoices()->exists()) {
+            return redirect()->route('purchase-order.show', $id)
+                ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
+        }
+
+        $request->validate([
+            'No_Barang' => 'required|exists:barangs,Kode_Barang',
+            'Qty'       => 'required|integer|min:1',
+            'Metode'    => 'nullable|string|max:100',
+        ]);
+
+        $barang = Barang::findOrFail($request->No_Barang);
+        $amount = $request->Qty * $barang->Unit_Price;
+
+        DetailInvoice::create([
+            'No_PO'      => $po->No_PO,
+            'No_Barang'  => $request->No_Barang,
+            'Qty'        => $request->Qty,
+            'Unit_Price' => $barang->Unit_Price,
+            'Amount'     => $amount,
+            'Metode'     => $request->Metode,
+        ]);
+
+        $this->recalcPO($po);
+
+        return redirect()->route('purchase-order.detail.create', $po->No_PO)
+            ->with('success', 'Barang "' . $barang->Nama_Barang . '" berhasil ditambahkan.');
+    }
+
+    public function detailDestroy(string $id, int $detailId)
+    {
+        $po = PurchaseOrder::findOrFail($id);
+
+        if ($po->invoices()->exists()) {
+            return redirect()->route('purchase-order.show', $id)
+                ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
+        }
+
+        DetailInvoice::where('id', $detailId)->where('No_PO', $po->No_PO)->delete();
+
+        $this->recalcPO($po);
+
+        return redirect()->route('purchase-order.detail.create', $po->No_PO)
+            ->with('success', 'Detail barang berhasil dihapus.');
+    }
+
+    private function recalcPO(PurchaseOrder $po): void
+    {
+        $po->refresh();
+        $subTotal   = $po->details()->sum('Amount');
+        $ppn        = 11;
+        $grandTotal = round($subTotal * (1 + $ppn / 100), 2);
+
+        $po->update([
+            'Sub_Total'   => $subTotal,
+            'PPN'         => $ppn,
+            'Grand_Total' => $grandTotal,
+        ]);
+    }
+
     private function buildDetails(array $details): array
     {
         $subTotal   = 0;
@@ -185,7 +229,6 @@ class PurchaseOrderController extends Controller
     {
         return [
             'customers' => Customer::orderBy('Nama')->get(),
-            'barangs'   => Barang::orderBy('Nama_Barang')->get(),
         ];
     }
 }

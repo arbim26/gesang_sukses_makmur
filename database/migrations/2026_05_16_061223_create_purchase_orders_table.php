@@ -8,27 +8,29 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // ERD: Purchase Order (No_PO PK, PO_Date, Delivery_date, Sub_Total,
-        //                      Grand_Total, PPN_11%, Note, Id_Cust FK)
-        Schema::create('purchase_orders', function (Blueprint $table) {
-            $table->string('No_PO', 30)->primary();
-            $table->string('Id_Cust', 20);
-            $table->date('PO_Date');
-            $table->date('Delivery_date')->nullable();
-            $table->decimal('Sub_Total', 15, 2)->default(0);
-            $table->decimal('PPN', 5, 2)->default(11);     // PPN 11%
-            $table->decimal('Grand_Total', 15, 2)->default(0);
-            $table->text('Note')->nullable();
+        // ERD: Detail PO (No_Barang FK, No_PO FK, Qty, Amount, Metode)
+        Schema::create('detail_invoices', function (Blueprint $table) {
+            $table->id();
+            $table->string('No_PO', 30);
+            $table->string('No_Barang', 20);
+            $table->integer('Qty');
+            $table->decimal('Unit_Price', 15, 2);
+            $table->decimal('Amount', 15, 2);
+            $table->string('Metode', 100)->nullable();
             $table->timestamps();
 
-            $table->foreign('Id_Cust')
-                  ->references('Id_Cust')->on('customers')
+            $table->foreign('No_PO')
+                  ->references('No_PO')->on('purchase_orders')
+                  ->cascadeOnDelete();
+
+            $table->foreign('No_Barang')
+                  ->references('Kode_Barang')->on('barangs')
                   ->restrictOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('purchase_orders');
+        Schema::dropIfExists('detail_invoices');
     }
 };

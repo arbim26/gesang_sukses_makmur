@@ -99,6 +99,17 @@ class SuratJalanController extends Controller
             ->with('success', 'Surat Jalan berhasil dihapus.');
     }
 
+    public function print(string $id)
+    {
+        $suratJalan = SuratJalan::with([
+            'purchaseOrder.customer',
+            'purchaseOrder.details.barang',
+            'supir',
+        ])->findOrFail($id);
+
+        return view('surat-jalan.print', compact('suratJalan'));
+    }
+
     // ── Helper ─────────────────────────────────────────────────
     private function formData(?string $currentNoPO = null): array
     {
