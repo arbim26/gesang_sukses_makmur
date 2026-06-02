@@ -2,34 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\Barang;
 use App\Models\SuratJalan;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Statistik jumlah
+        $pegawai = Auth::guard('pegawai')->user();
+
+        // Statistik
         $totalInvoice = Invoice::count();
         $totalCustomer = Customer::count();
         $totalBarang = Barang::count();
         $totalSuratJalan = SuratJalan::count();
 
-        // Data terbaru (limit 5)
+        // Data terbaru (5 terakhir berdasarkan Tanggal)
         $recentInvoices = Invoice::orderBy('tanggal_terbit', 'desc')
-                                 ->orderBy('created_at', 'desc')
-                                 ->limit(5)
-                                 ->get();
+            ->take(5)
+            ->get(['No_Invoice', 'tanggal_terbit']);
 
         $recentSJ = SuratJalan::orderBy('Tanggal', 'desc')
-                              ->orderBy('created_at', 'desc')
-                              ->limit(5)
-                              ->get();
+            ->take(5)
+            ->get(['No_SJ', 'Tanggal']);
 
         return view('dashboard', compact(
+            'pegawai',
             'totalInvoice',
             'totalCustomer',
             'totalBarang',
@@ -38,4 +39,5 @@ class DashboardController extends Controller
             'recentSJ'
         ));
     }
+
 }
