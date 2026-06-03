@@ -46,8 +46,8 @@ class PurchaseOrderController extends Controller
             'Note'          => $request->Note,
         ]);
 
-        return redirect()->route('purchase-order.detail.create', $request->No_PO)
-            ->with('success', 'Purchase Order berhasil dibuat. Silakan tambahkan detail barang.');
+                    return redirect()->route('purchase-order.show', $request->No_PO)
+                ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
     }
 
     public function show(string $id)
@@ -61,7 +61,9 @@ class PurchaseOrderController extends Controller
             'suratJalan.supir',
         ])->findOrFail($id);
 
-        return view('purchase-order.show', compact('po'));
+        $barangs = Barang::orderBy('Nama_Barang')->get();
+
+        return view('purchase-order.show', compact('po', 'barangs'));
     }
 
     public function edit(string $id)

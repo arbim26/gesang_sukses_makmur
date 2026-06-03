@@ -17,7 +17,7 @@ class DetailInvoiceController extends Controller
 
     public function create(string $poId)
     {
-        return redirect()->route('purchase-order.edit', $poId);
+        return redirect()->route('purchase-order.create', $poId);
     }
 
     public function store(Request $request, string $poId)
