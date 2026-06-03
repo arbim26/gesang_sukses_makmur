@@ -144,14 +144,13 @@ class InvoiceController extends Controller
         $afterDisc  = $subTotal * (1 - $diskon / 100);
         $grandTotal = round($afterDisc * (1 + $ppn / 100), 2);
 
-        return view('invoice.print', compact('invoice', 'subTotal', 'ppn', 'diskon', 'afterDisc', 'grandTotal'));
+        return view('invoice.invoice_print', compact('invoice', 'subTotal', 'ppn', 'diskon', 'afterDisc', 'grandTotal'));
     }
 
     // ── Helper ────────────────────────────────────────────────
     private function formData(?string $currentNoPO = null): array
     {
-        // Untuk create: hanya PO yang belum punya invoice
-        // Untuk edit: sertakan PO milik invoice yang sedang diedit
+
         $poQuery = PurchaseOrder::with(['customer', 'details.barang'])
             ->whereDoesntHave('invoices');
 

@@ -127,20 +127,6 @@ class PurchaseOrderController extends Controller
     // ── Helper: hitung totals & siapkan baris detail ────────
     // ── Halaman khusus tambah/hapus detail barang ───────────
 
-    public function detailCreate(string $id)
-    {
-        $po = PurchaseOrder::with(['customer', 'details.barang'])->findOrFail($id);
-
-        if ($po->invoices()->exists()) {
-            return redirect()->route('purchase-order.show', $id)
-                ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
-        }
-
-        $barangs = Barang::orderBy('Nama_Barang')->get();
-
-        return view('purchase-order.detail', compact('po', 'barangs'));
-    }
-
     public function detailStore(Request $request, string $id)
     {
         $po = PurchaseOrder::with('details')->findOrFail($id);
@@ -170,7 +156,7 @@ class PurchaseOrderController extends Controller
 
         $this->recalcPO($po);
 
-        return redirect()->route('purchase-order.detail.create', $po->No_PO)
+        return redirect()->route('purchase-order.show', $id)
             ->with('success', 'Barang "' . $barang->Nama_Barang . '" berhasil ditambahkan.');
     }
 
@@ -187,7 +173,7 @@ class PurchaseOrderController extends Controller
 
         $this->recalcPO($po);
 
-        return redirect()->route('purchase-order.detail.create', $po->No_PO)
+        return redirect()->route('purchase-order.show', $id)
             ->with('success', 'Detail barang berhasil dihapus.');
     }
 
