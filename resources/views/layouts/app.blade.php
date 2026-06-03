@@ -219,6 +219,10 @@
            class="nav-link {{ request()->routeIs('invoice.*') ? 'active' : '' }}">
             <i class="bi bi-receipt"></i> Invoice
         </a>
+        <!-- <a href="{{ route('detail-invoice.index') }}"
+           class="nav-link {{ request()->routeIs('detail-invoice.*') ? 'active' : '' }}">
+            <i class="bi bi-list-check"></i> Detail Invoice
+        </a> -->
         <a href="{{ route('surat-jalan.index') }}"
            class="nav-link {{ request()->routeIs('surat-jalan.*') ? 'active' : '' }}">
             <i class="bi bi-truck"></i> Surat Jalan
@@ -233,8 +237,17 @@
         <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
         <div class="topbar-actions">
             <span style="font-size:.8rem; color:var(--text-muted);">
-                <i class="bi bi-person-circle"></i> Admin
+                <i class="bi bi-person-circle me-1"></i>
+                {{ auth('pegawai')->user()->Nama_Pegawai ?? 'Admin' }}
             </span>
+            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit"
+                        class="btn btn-sm btn-outline-secondary"
+                        style="font-size:.75rem;border-color:var(--border);color:var(--text-muted);">
+                    <i class="bi bi-box-arrow-right me-1"></i> Keluar
+                </button>
+            </form>
         </div>
     </header>
 

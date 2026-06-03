@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Pegawai;          
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;  
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -34,6 +36,8 @@ class LoginController extends Controller
             'password.required'   => 'Password wajib diisi.',
         ]);
 
+
+
         $credentials = [
             'Id_Pegawai' => $request->id_pegawai, // Sesuai kolom DB (Kapital)
             'password'   => $request->password,   // Sesuai kolom DB (Kecil)
@@ -42,7 +46,17 @@ class LoginController extends Controller
 
         // dd(Auth::guard('pegawai')->attempt($credentials, $remember));
 
-        if (Auth::guard('pegawai')->attempt($credentials, $remember)) {
+        // $user = Pegawai::where('Id_Pegawai', $request->id_pegawai)->first();
+        // dd([
+        //     'user_found'        => $user ? 'YES' : 'NO',
+        //     'input_password'    => $request->password,
+        //     'hashed_password'   => $user?->password,
+        //     'password_check'    => $user ? Hash::check($request->password, $user->password) : 'N/A',
+        //     'credentials'       => $credentials,
+        //     'guard_provider'    => config('auth.guards.web'),
+        //     'pegawai_provider'  => config('auth.providers.pegawais'),
+        // ]);
+        if (Auth::guard('pegawai')->attempt($credentials, $remember)){
             $request->session()->regenerate();
             return redirect()->route('dashboard');
         }
