@@ -73,7 +73,7 @@
         /* ── decorative top bar ── */
         .top-bar {
             height: 6px;
-            background: linear-gradient(90deg, var(--navy) 0%, var(--navy2) 60%, var(--gold) 100%);
+            background: var(--navy);
         }
 
         .inner {
@@ -127,7 +127,7 @@
 
         .company-tagline {
             font-size: 9.5px;
-            color: var(--gold);
+            color: var(--navy);
             font-weight: 600;
             letter-spacing: .8px;
             text-transform: uppercase;
@@ -167,7 +167,7 @@
             font-weight: 600;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: var(--gold);
+            color: var(--navy);
             margin-bottom: 5px;
         }
 
@@ -293,7 +293,7 @@
         }
 
         .grand-row td.val-cell {
-            color: var(--gold-lt) !important;
+            color: var(--navy-lt) !important;
         }
 
         /* ── FOOTER ── */
@@ -312,7 +312,7 @@
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: var(--gold);
+            color: var(--navy);
             margin-bottom: 8px;
         }
 
@@ -384,7 +384,7 @@
         /* ── bottom bar ── */
         .bottom-bar {
             height: 4px;
-            background: linear-gradient(90deg, var(--gold) 0%, var(--navy) 100%);
+            background: var(--navy);
         }
 
         @media print {

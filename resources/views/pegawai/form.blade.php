@@ -23,19 +23,21 @@
                     @csrf
                     @if(isset($pegawai)) @method('PUT') @endif
 
+                    {{-- 1. Input ID Pegawai --}}
                     <div class="mb-3">
-                        <label class="form-label">ID Pegawai <span class="text-danger">*</span></label>
+                        <label class="form-label">Nomor Induk Pegawai <span class="text-danger">*</span></label>
                         <input type="text" name="Id_Pegawai"
                             class="form-control @error('Id_Pegawai') is-invalid @enderror"
                             value="{{ old('Id_Pegawai', $pegawai->Id_Pegawai ?? '') }}"
-                            placeholder="Contoh: CEO-001, SEK-001, SUP-001, STF-001"
+                            placeholder="Nomor Induk Pegawai"
                             {{ isset($pegawai) ? 'readonly' : '' }} required>
                         @error('Id_Pegawai')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         @if(!isset($pegawai))
-                        <small class="text-muted">Format: CEO-XXX / SEK-XXX / SUP-XXX / STF-XXX</small>
+                        {{-- <small class="text-muted">Format: IT-XXX / CEO-XXX / MNJ-XXX / SEK-XXX / BND-XXX / STF-XXX / SUP-XXX</small> --}}
                         @endif
                     </div>
 
+                    {{-- 2. Input Nama Pegawai --}}
                     <div class="mb-3">
                         <label class="form-label">Nama Pegawai <span class="text-danger">*</span></label>
                         <input type="text" name="Nama_Pegawai"
@@ -45,11 +47,28 @@
                         @error('Nama_Pegawai')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- 3. Input Password (Baru) --}}
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Password 
+                            @if(!isset($pegawai)) <span class="text-danger">*</span> @endif
+                        </label>
+                        <input type="password" name="password"
+                            class="form-control @error('password') is-invalid @enderror"
+                            placeholder="{{ isset($pegawai) ? 'Kosongkan jika tidak ingin mengubah' : 'Masukkan password login' }}"
+                            @if(!isset($pegawai)) required @endif>
+                        @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        @if(isset($pegawai))
+                        <small class="text-muted">Isi hanya jika ingin mengganti password pegawai ini.</small>
+                        @endif
+                    </div>
+
+                    {{-- 4. Select Jabatan --}}
                     <div class="mb-4">
                         <label class="form-label">Jabatan <span class="text-danger">*</span></label>
                         <select name="Jabatan" class="form-select @error('Jabatan') is-invalid @enderror" required>
                             <option value="">— Pilih Jabatan —</option>
-                            @foreach(['CEO','Sekretaris','Supir','Staff'] as $jab)
+                            @foreach(['Staf IT', 'Direksi', 'Manajer', 'Sekretaris', 'Bendahara', 'Staf', 'Pengemudi'] as $jab)
                                 <option value="{{ $jab }}"
                                     {{ old('Jabatan', $pegawai->Jabatan ?? '') == $jab ? 'selected' : '' }}>
                                     {{ $jab }}
@@ -59,6 +78,7 @@
                         @error('Jabatan')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Tombol Aksi --}}
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-accent">
                             <i class="bi bi-check-lg me-1"></i>

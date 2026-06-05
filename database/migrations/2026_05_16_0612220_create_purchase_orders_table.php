@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('PPN', 5, 2)->default(11);     // PPN 11%
             $table->decimal('Grand_Total', 15, 2)->default(0);
             $table->text('Note')->nullable();
+            $table->string('attachment')->nullable(); 
             $table->timestamps();
 
             $table->foreign('Id_Cust')

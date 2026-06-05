@@ -113,11 +113,12 @@
             <div class="card">
                 <div class="card-header"><span>Pegawai Terkait</span></div>
                 <div class="card-body p-4">
+                    {{-- INPUT DIREKSI (Pengganti Teks CEO) --}}
                     <div class="mb-3">
-                        <label class="form-label">CEO <span class="text-danger">*</span></label>
+                        <label class="form-label">Direksi <span class="text-danger">*</span></label>
                         <select name="Id_CEO" class="form-select @error('Id_CEO') is-invalid @enderror" required>
-                            <option value="">— Pilih CEO —</option>
-                            @foreach($petugasCEO as $p)
+                            <option value="">— Pilih Direksi —</option>
+                            @foreach($petugasDireksi as $p)
                                 <option value="{{ $p->Id_Pegawai }}"
                                     {{ old('Id_CEO', $invoice->Id_CEO ?? '') == $p->Id_Pegawai ? 'selected' : '' }}>
                                     {{ $p->Nama_Pegawai }}
@@ -126,6 +127,8 @@
                         </select>
                         @error('Id_CEO')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
+                    
+                    {{-- INPUT SEKRETARIS --}}
                     <div class="mb-3">
                         <label class="form-label">Sekretaris <span class="text-danger">*</span></label>
                         <select name="Id_Sekretaris" class="form-select @error('Id_Sekretaris') is-invalid @enderror" required>

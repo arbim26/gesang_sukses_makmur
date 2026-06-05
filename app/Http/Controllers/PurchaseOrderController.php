@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PurchaseOrder;
-use App\Models\Customer;
 use App\Models\Barang;
+use App\Models\Customer;
 use App\Models\DetailInvoice;
+use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -28,26 +28,31 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'No_PO'        => 'required|unique:purchase_orders,No_PO|max:30',
-            'Id_Cust'      => 'required|exists:customers,Id_Cust',
-            'PO_Date'      => 'required|date',
-            'Delivery_date'=> 'nullable|date|after_or_equal:PO_Date',
-            'Note'         => 'nullable|string',
+            'No_PO' => 'required|unique:purchase_orders,No_PO|max:30',
+            'Id_Cust' => 'required|exists:customers,Id_Cust',
+            'PO_Date' => 'required|date',
+            'Delivery_date' => 'nullable|date|after_or_equal:PO_Date',
+            'Note' => 'nullable|string',
+            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
+        
+        $data = $request->all();
+        // dd($request->hasFile('attachment'));
+        
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
 
-        PurchaseOrder::create([
-            'No_PO'         => $request->No_PO,
-            'Id_Cust'       => $request->Id_Cust,
-            'PO_Date'       => $request->PO_Date,
-            'Delivery_date' => $request->Delivery_date,
-            'Sub_Total'     => 0,
-            'PPN'           => 11,
-            'Grand_Total'   => 0,
-            'Note'          => $request->Note,
-        ]);
+            $fileName = 'PO_' . time() . '_' . $file->getClientOriginalName();
 
-                    return redirect()->route('purchase-order.show', $request->No_PO)
-                ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
+            $filePath = $file->storeAs('attachments/po', $fileName, 'public');
+
+            $data['attachment'] = $filePath;
+        }
+
+        PurchaseOrder::create($data);
+
+        return redirect()->route('purchase-order.show', $request->No_PO)
+            ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
     }
 
     public function show(string $id)
@@ -70,7 +75,6 @@ class PurchaseOrderController extends Controller
     {
         $po = PurchaseOrder::with('details')->findOrFail($id);
 
-        // Tidak boleh edit PO yang sudah punya Invoice
         if ($po->invoices()->exists()) {
             return redirect()->route('purchase-order.show', $id)
                 ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
@@ -83,24 +87,25 @@ class PurchaseOrderController extends Controller
     {
         $po = PurchaseOrder::findOrFail($id);
 
-        if ($po->invoices()->exists()) {
-            return redirect()->route('purchase-order.show', $id)
-                ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
-        }
-
         $request->validate([
-            'Id_Cust'      => 'required|exists:customers,Id_Cust',
-            'PO_Date'      => 'required|date',
-            'Delivery_date'=> 'nullable|date|after_or_equal:PO_Date',
-            'Note'         => 'nullable|string',
+            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
-
-        $po->update([
-            'Id_Cust'       => $request->Id_Cust,
-            'PO_Date'       => $request->PO_Date,
-            'Delivery_date' => $request->Delivery_date,
-            'Note'          => $request->Note,
-        ]);
+    
+        $data = $request->all();
+    
+        if ($request->hasFile('attachment')) {
+            if ($po->attachment && Storage::disk('public')->exists($po->attachment)) {
+                Storage::disk('public')->delete($po->attachment);
+            }
+    
+            $file = $request->file('attachment');
+            $fileName = 'PO_' . time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('attachments/po', $fileName, 'public');
+            
+            $data['attachment'] = $filePath;
+        }
+    
+        $po->update($data);
 
         return redirect()->route('purchase-order.show', $po->No_PO)
             ->with('success', 'Purchase Order berhasil diperbarui.');
@@ -124,9 +129,6 @@ class PurchaseOrderController extends Controller
             ->with('success', 'Purchase Order berhasil dihapus.');
     }
 
-    // ── Helper: hitung totals & siapkan baris detail ────────
-    // ── Halaman khusus tambah/hapus detail barang ───────────
-
     public function detailStore(Request $request, string $id)
     {
         $po = PurchaseOrder::with('details')->findOrFail($id);
@@ -138,26 +140,26 @@ class PurchaseOrderController extends Controller
 
         $request->validate([
             'No_Barang' => 'required|exists:barangs,Kode_Barang',
-            'Qty'       => 'required|integer|min:1',
-            'Metode'    => 'nullable|string|max:100',
+            'Qty' => 'required|integer|min:1',
+            'Metode' => 'nullable|string|max:100',
         ]);
 
         $barang = Barang::findOrFail($request->No_Barang);
         $amount = $request->Qty * $barang->Unit_Price;
 
         DetailInvoice::create([
-            'No_PO'      => $po->No_PO,
-            'No_Barang'  => $request->No_Barang,
-            'Qty'        => $request->Qty,
+            'No_PO' => $po->No_PO,
+            'No_Barang' => $request->No_Barang,
+            'Qty' => $request->Qty,
             'Unit_Price' => $barang->Unit_Price,
-            'Amount'     => $amount,
-            'Metode'     => $request->Metode,
+            'Amount' => $amount,
+            'Metode' => $request->Metode,
         ]);
 
         $this->recalcPO($po);
 
         return redirect()->route('purchase-order.show', $id)
-            ->with('success', 'Barang "' . $barang->Nama_Barang . '" berhasil ditambahkan.');
+            ->with('success', 'Barang "'.$barang->Nama_Barang.'" berhasil ditambahkan.');
     }
 
     public function detailDestroy(string $id, int $detailId)
@@ -180,33 +182,33 @@ class PurchaseOrderController extends Controller
     private function recalcPO(PurchaseOrder $po): void
     {
         $po->refresh();
-        $subTotal   = $po->details()->sum('Amount');
-        $ppn        = 11;
+        $subTotal = $po->details()->sum('Amount');
+        $ppn = 11;
         $grandTotal = round($subTotal * (1 + $ppn / 100), 2);
 
         $po->update([
-            'Sub_Total'   => $subTotal,
-            'PPN'         => $ppn,
+            'Sub_Total' => $subTotal,
+            'PPN' => $ppn,
             'Grand_Total' => $grandTotal,
         ]);
     }
 
     private function buildDetails(array $details): array
     {
-        $subTotal   = 0;
+        $subTotal = 0;
         $detailRows = [];
 
         foreach ($details as $d) {
-            $barang     = Barang::findOrFail($d['No_Barang']);
-            $amount     = $d['Qty'] * $barang->Unit_Price;
-            $subTotal  += $amount;
+            $barang = Barang::findOrFail($d['No_Barang']);
+            $amount = $d['Qty'] * $barang->Unit_Price;
+            $subTotal += $amount;
 
             $detailRows[] = [
-                'No_Barang'  => $d['No_Barang'],
-                'Qty'        => $d['Qty'],
+                'No_Barang' => $d['No_Barang'],
+                'Qty' => $d['Qty'],
                 'Unit_Price' => $barang->Unit_Price,
-                'Amount'     => $amount,
-                'Metode'     => $d['Metode'],
+                'Amount' => $amount,
+                'Metode' => $d['Metode'],
             ];
         }
 

@@ -12,7 +12,7 @@ class PurchaseOrder extends Model
     protected $keyType    = 'string';
     protected $fillable   = [
         'No_PO', 'Id_Cust', 'PO_Date', 'Delivery_date',
-        'Sub_Total', 'PPN', 'Grand_Total', 'Note',
+        'Sub_Total', 'PPN', 'Grand_Total', 'Note','attachment',
     ];
 
     public function customer()
