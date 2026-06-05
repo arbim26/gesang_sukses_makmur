@@ -107,7 +107,7 @@ class SuratJalanController extends Controller
             'supir',
         ])->findOrFail($id);
 
-        return view('surat-jalan.print', compact('suratJalan'));
+        return view('surat-jalan.surat_jalan_print', compact('suratJalan'));
     }
 
     // ── Helper ─────────────────────────────────────────────────

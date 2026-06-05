@@ -15,7 +15,7 @@ class InvoiceController extends Controller
     {
         $invoices = Invoice::with([
             'purchaseOrder.customer',
-            'ceo',
+            'ceo', // Menggunakan relasi ke model pegawai
             'sekretaris',
             'rekening',
         ])->latest('tanggal_terbit')->paginate(10);
@@ -36,7 +36,7 @@ class InvoiceController extends Controller
             'No_PO'          => 'required|exists:purchase_orders,No_PO',
             'tanggal_terbit' => 'required|date',
             'discount'       => 'nullable|numeric|min:0|max:100',
-            'Id_CEO'         => 'required|exists:pegawais,Id_Pegawai',
+            'Id_CEO'         => 'required|exists:pegawais,Id_Pegawai', // ID Kolom database tetap Id_CEO
             'Id_Sekretaris'  => 'required|exists:pegawais,Id_Pegawai',
             'Acc_No'         => 'required|exists:rekenings,Acc_No',
         ]);
@@ -144,14 +144,12 @@ class InvoiceController extends Controller
         $afterDisc  = $subTotal * (1 - $diskon / 100);
         $grandTotal = round($afterDisc * (1 + $ppn / 100), 2);
 
-        return view('invoice.print', compact('invoice', 'subTotal', 'ppn', 'diskon', 'afterDisc', 'grandTotal'));
+        return view('invoice.invoice_print', compact('invoice', 'subTotal', 'ppn', 'diskon', 'afterDisc', 'grandTotal'));
     }
 
     // ── Helper ────────────────────────────────────────────────
     private function formData(?string $currentNoPO = null): array
     {
-        // Untuk create: hanya PO yang belum punya invoice
-        // Untuk edit: sertakan PO milik invoice yang sedang diedit
         $poQuery = PurchaseOrder::with(['customer', 'details.barang'])
             ->whereDoesntHave('invoices');
 
@@ -161,7 +159,8 @@ class InvoiceController extends Controller
 
         return [
             'purchaseOrders'    => $poQuery->latest('PO_Date')->get(),
-            'petugasCEO'        => Pegawai::where('Jabatan', 'CEO')->orderBy('Nama_Pegawai')->get(),
+            // Perubahan: Mencari pegawai yang memiliki Jabatan 'Direksi' sesuai data migration baru
+            'petugasDireksi'    => Pegawai::where('Jabatan', 'Direksi')->orderBy('Nama_Pegawai')->get(),
             'petugasSekretaris' => Pegawai::where('Jabatan', 'Sekretaris')->orderBy('Nama_Pegawai')->get(),
             'rekenings'         => Rekening::orderBy('Bank')->get(),
         ];

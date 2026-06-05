@@ -60,5 +60,22 @@
         </table>
     </div>
 </div>
-<div class="mt-3">{{ $customers->links() }}</div>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-2">
+    <div class="text-muted small">
+        Menampilkan {{ $customers->firstItem() ?? 0 }} - {{ $customers->lastItem() ?? 0 }} dari total {{ $customers->total() }} barang
+    </div>
+    <div>
+        @if ($customers->hasPages())
+            {{ $customers->onEachSide(1)->links('pagination::bootstrap-5') }}
+        @else
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    <li class="page-item active"><span class="page-link">1</span></li>
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                </ul>
+            </nav>
+        @endif
+    </div>
+</div>
 @endsection

@@ -29,6 +29,7 @@ Route::middleware('auth:pegawai')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
     // ── Master Data ────────────────────────────────────────────
+    Route::get('pegawai/generate-id', [PegawaiController::class, 'generateId'])->name('pegawai.generate-id');
     Route::resource('pegawai', PegawaiController::class);
     Route::resource('customer', CustomerController::class);
     Route::resource('barang', BarangController::class);

@@ -107,7 +107,7 @@
                             <th class="text-center">Qty</th>
                             <th class="text-end">Unit Price</th>
                             <th class="text-end">Amount</th>
-                            <th>Metode</th>
+                            <th>Metode Pengerjaan</th>
                             @if(!$po->invoices->count())
                             <th style="width:90px;"></th>
                             @endif
@@ -124,11 +124,7 @@
                             <td class="text-end">Rp {{ number_format($d->Unit_Price, 0, ',', '.') }}</td>
                             <td class="text-end" style="font-weight:500;">Rp {{ number_format($d->Amount, 0, ',', '.') }}</td>
                             <td>
-                                @php
-                                    $mc = ['Transfer'=>['#dbeafe','#1d4ed8'],'Cash'=>['#dcfce7','#15803d'],'Kredit'=>['#fef3c7','#b45309']];
-                                    $cl = $mc[$d->Metode] ?? ['#f3f4f6','#374151'];
-                                @endphp
-                                <span class="badge-pill" style="background:{{ $cl[0] }};color:{{ $cl[1] }};font-size:.7rem;">
+                                <span class="badge-pill" style="background:#f3f4f6;color:#374151;font-size:.7rem;">
                                     {{ $d->Metode }}
                                 </span>
                             </td>
@@ -303,21 +299,10 @@
 
                     {{-- Metode --}}
                     <div class="mb-3">
-                        <label class="form-label">Metode Pembayaran <span class="text-danger">*</span></label>
-                        <div class="d-flex gap-2">
-                            @foreach(['Transfer','Cash','Kredit'] as $m)
-                            <label class="d-flex align-items-center gap-2 px-3 py-2 rounded metode-lbl"
-                                   style="border:1.5px solid var(--border);cursor:pointer;font-size:.85rem;flex:1;">
-                                <input type="radio" name="Metode" value="{{ $m }}"
-                                       class="metode-radio" style="accent-color:var(--accent);"
-                                       {{ $m=='Transfer' ? 'checked' : '' }}>
-                                @if($m=='Transfer')<i class="bi bi-bank"></i>
-                                @elseif($m=='Cash')<i class="bi bi-cash-coin"></i>
-                                @else<i class="bi bi-credit-card"></i>@endif
-                                {{ $m }}
-                            </label>
-                            @endforeach
-                        </div>
+                        <label class="form-label">Metode Pengerjaan <span class="text-danger">*</span></label>
+                        <input type="text" name="Metode" id="inpMetodeTambah"
+                               class="form-control" placeholder="Contoh: Borongan, Harian, Lembur, dll."
+                               required>
                     </div>
 
                     {{-- Preview Amount --}}
@@ -387,20 +372,10 @@
 
                     {{-- Metode --}}
                     <div class="mb-3">
-                        <label class="form-label">Metode Pembayaran <span class="text-danger">*</span></label>
-                        <div class="d-flex gap-2">
-                            @foreach(['Transfer','Cash','Kredit'] as $m)
-                            <label class="d-flex align-items-center gap-2 px-3 py-2 rounded metode-lbl-edit"
-                                   style="border:1.5px solid var(--border);cursor:pointer;font-size:.85rem;flex:1;">
-                                <input type="radio" name="Metode" value="{{ $m }}"
-                                       class="metode-radio-edit" style="accent-color:var(--accent);">
-                                @if($m=='Transfer')<i class="bi bi-bank"></i>
-                                @elseif($m=='Cash')<i class="bi bi-cash-coin"></i>
-                                @else<i class="bi bi-credit-card"></i>@endif
-                                {{ $m }}
-                            </label>
-                            @endforeach
-                        </div>
+                        <label class="form-label">Metode Pengerjaan <span class="text-danger">*</span></label>
+                        <input type="text" name="Metode" id="editMetode"
+                               class="form-control" placeholder="Contoh: Borongan, Harian, Lembur, dll."
+                               required>
                     </div>
 
                     {{-- Preview Amount --}}
@@ -434,23 +409,6 @@ barangs.forEach(b => barangMap[b.Kode_Barang] = b);
 /* ── Helper ── */
 function fmt(n) { return Math.round(n).toLocaleString('id-ID'); }
 
-function highlightMetode(radios, labels) {
-    radios.forEach(r => {
-        r.addEventListener('change', () => {
-            labels.forEach(l => { l.style.borderColor = 'var(--border)'; l.style.background = ''; });
-            const lbl = r.closest('label');
-            lbl.style.borderColor = 'var(--accent)';
-            lbl.style.background  = 'var(--accent-lt)';
-        });
-        // Inisialisasi highlight awal
-        if (r.checked) {
-            const lbl = r.closest('label');
-            lbl.style.borderColor = 'var(--accent)';
-            lbl.style.background  = 'var(--accent-lt)';
-        }
-    });
-}
-
 /* ── Modal Tambah ── */
 const selBarangTambah = document.getElementById('selBarangTambah');
 const inpQtyTambah    = document.getElementById('inpQtyTambah');
@@ -475,7 +433,6 @@ if (selBarangTambah) {
 
     const radios = document.querySelectorAll('#formTambah .metode-radio');
     const labels = document.querySelectorAll('#formTambah .metode-lbl');
-    highlightMetode(radios, labels);
 
     // Reset modal saat dibuka
     document.getElementById('modalTambah').addEventListener('show.bs.modal', () => {
@@ -483,20 +440,12 @@ if (selBarangTambah) {
         document.getElementById('inpPriceTambah').value   = '';
         document.getElementById('lblUnitTambah').textContent = 'pcs';
         document.getElementById('lblAmountTambah').textContent = 'Rp —';
-        labels.forEach(l => { l.style.borderColor = 'var(--border)'; l.style.background = ''; });
-        // Re-check Transfer
-        const first = document.querySelector('#formTambah .metode-radio[value="Transfer"]');
-        if (first) { first.checked = true; first.closest('label').style.borderColor = 'var(--accent)'; first.closest('label').style.background = 'var(--accent-lt)'; }
+        document.getElementById('inpMetodeTambah').value = '';
     });
 }
 
 /* ── Modal Edit ── */
-const editRadios = document.querySelectorAll('#formEdit .metode-radio-edit');
-const editLabels = document.querySelectorAll('#formEdit .metode-lbl-edit');
-
-if (editRadios.length) {
-    highlightMetode(editRadios, editLabels);
-
+if (document.getElementById('editQty')) {
     document.getElementById('editQty').addEventListener('input', hitungEdit);
     document.getElementById('editPrice').addEventListener('input', hitungEdit);
 
@@ -524,13 +473,7 @@ document.querySelectorAll('.btn-edit-detail').forEach(btn => {
         document.getElementById('editQty').value        = qty;
         document.getElementById('editPrice').value      = price;
 
-        // Set metode radio
-        editRadios.forEach(r => {
-            r.checked = (r.value === metode);
-            const lbl = r.closest('label');
-            lbl.style.borderColor = r.checked ? 'var(--accent)' : 'var(--border)';
-            lbl.style.background  = r.checked ? 'var(--accent-lt)' : '';
-        });
+        document.getElementById('editMetode').value = metode;
 
         // Hitung amount
         document.getElementById('lblAmountEdit').textContent =

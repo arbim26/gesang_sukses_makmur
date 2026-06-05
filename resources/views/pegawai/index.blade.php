@@ -30,34 +30,42 @@
                     <td>{{ $p->Nama_Pegawai }}</td>
                     <td>
                         @php
+                            // Menyesuaikan array warna badge dengan nama-nama jabatan baru yang formal
                             $colors = [
-                                'CEO'        => 'background:#fef3c7;color:#d97706;',
+                                'Staf IT'    => 'background:#fee2e2;color:#dc2626;',
+                                'Direksi'    => 'background:#fef3c7;color:#d97706;', // Diubah ke Direksi
+                                'Manajer'    => 'background:#fae8ff;color:#a21caf;',
                                 'Sekretaris' => 'background:#eef2ff;color:#4f46e5;',
-                                'Supir'      => 'background:#ecfdf5;color:#059669;',
-                                'Staff'      => 'background:#f3f4f6;color:#374151;',
+                                'Bendahara'  => 'background:#e0f2fe;color:#0369a1;',
+                                'Staf'       => 'background:#f3f4f6;color:#374151;',
+                                'Pengemudi'  => 'background:#ecfdf5;color:#059669;',
                             ];
                         @endphp
-                        <span class="badge-pill" style="{{ $colors[$p->Jabatan] ?? '' }}">
+                        <span class="badge-pill" style="{{ $colors[$p->Jabatan] ?? 'background:#f3f4f6;color:#374151;' }}">
                             {{ $p->Jabatan }}
                         </span>
                     </td>
                     <td>
-                        <a href="{{ route('pegawai.show', $p->Id_Pegawai) }}"
-                           class="btn btn-sm btn-outline-primary me-1">
-                            <i class="bi bi-eye"></i>
-                        </a>
                         <a href="{{ route('pegawai.edit', $p->Id_Pegawai) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <form action="{{ route('pegawai.destroy', $p->Id_Pegawai) }}"
-                              method="POST" class="d-inline"
-                              onsubmit="return confirm('Hapus pegawai ini?')">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash3"></i>
-                            </button>
-                        </form>
+            
+                        {{-- Proteksi Lapisan View: Jangan tampilkan tombol hapus jika ID Pegawai sama dengan user yang login --}}
+                        @if(auth()->check() && auth()->user()->Id_Pegawai === $p->Id_Pegawai)
+                            <span class="badge bg-light text-muted small" style="padding: 5px 10px; border: 1px solid var(--border);">
+                                <i class="bi bi-person-fill-lock me-1"></i> Anda
+                            </span>
+                        @else
+                            <form action="{{ route('pegawai.destroy', $p->Id_Pegawai) }}"
+                                  method="POST" class="d-inline"
+                                  onsubmit="return confirm('Hapus pegawai ini?')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -73,7 +81,56 @@
     </div>
 </div>
 
-<div class="mt-3">
-    {{ $pegawais->links() }}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-2">
+    <div class="text-muted small">
+        {{-- Memperbaiki teks informasi keterangan dari "barang" menjadi "pegawai" --}}
+        Menampilkan {{ $pegawais->firstItem() ?? 0 }} - {{ $pegawais->lastItem() ?? 0 }} dari total {{ $pegawais->total() }} pegawai
+    </div>
+    <div>
+        @if ($pegawais->hasPages())
+            {{ $pegawais->onEachSide(1)->links('pagination::bootstrap-5') }}
+        @else
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    <li class="page-item active"><span class="page-link">1</span></li>
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                </ul>
+            </nav>
+        @endif
+    </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const jabatanSelect = document.querySelector('select[name="Jabatan"]');
+        const idInput = document.querySelector('input[name="Id_Pegawai"]');
+    
+        // Fitur auto-generate ID hanya bekerja jika input ID TIDAK berstatus 'readonly' (Mode Tambah Baru)
+        if (jabatanSelect && idInput && !idInput.hasAttribute('readonly')) {
+            jabatanSelect.addEventListener('change', function () {
+                const jabatanValue = this.value;
+    
+                if (!jabatanValue) {
+                    idInput.value = '';
+                    return;
+                }
+    
+                // Lakukan request ke backend controller menggunakan Fetch API
+                fetch(`{{ route('pegawai.generate-id') }}?jabatan=${encodeURIComponent(jabatanValue)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.id) {
+                            idInput.value = data.id;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Gagal generate ID:', error);
+                    });
+            });
+        }
+    });
+    </script>
+@endpush

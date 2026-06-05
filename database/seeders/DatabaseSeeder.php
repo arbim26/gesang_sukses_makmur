@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
         // Urutan penting — tabel dengan FK harus di-seed setelah tabel induknya
         $this->call([
             RekeningSeeder::class,       // independen
-            PetugasSeeder::class,        // independen
+            PegawaiSeeder::class,        // independen
             CustomerSeeder::class,       // independen
             BarangSeeder::class,         // independen
             PurchaseOrderSeeder::class,  // butuh customers + barangs (seeder ini juga insert detail_invoices)
