@@ -6,17 +6,29 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Urutan seeder wajib mengikuti dependency foreign key:
+     *
+     * 1. rekenings          → tidak ada FK
+     * 2. pegawais           → tidak ada FK
+     * 3. customers          → tidak ada FK
+     * 4. barangs            → tidak ada FK
+     * 5. purchase_orders    → FK ke customers
+     * 6. invoices           → FK ke purchase_orders, pegawais, rekenings
+     * 7. detail_invoices    → FK ke purchase_orders, barangs
+     * 8. surat_jalans       → FK ke purchase_orders, pegawais
+     */
     public function run(): void
     {
-        // Urutan penting — tabel dengan FK harus di-seed setelah tabel induknya
         $this->call([
-            RekeningSeeder::class,       // independen
-            PegawaiSeeder::class,        // independen
-            CustomerSeeder::class,       // independen
-            BarangSeeder::class,         // independen
-            PurchaseOrderSeeder::class,  // butuh customers + barangs (seeder ini juga insert detail_invoices)
-            InvoiceSeeder::class,        // butuh purchase_orders + petugas + rekenings
-            SuratJalanSeeder::class,     // butuh purchase_orders + petugas
+            RekeningSeeder::class,
+            PegawaiSeeder::class,
+            CustomerSeeder::class,
+            BarangSeeder::class,
+            PurchaseOrderSeeder::class,
+            InvoiceSeeder::class,
+            DetailInvoiceSeeder::class,
+            SuratJalanSeeder::class,
         ]);
     }
 }

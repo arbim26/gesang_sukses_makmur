@@ -9,6 +9,7 @@ use App\Http\Controllers\RekeningController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\DetailInvoiceController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\SuratJalanController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest:pegawai')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::get('/', [IndexController::class, 'index'])->name('index');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])
@@ -25,7 +27,6 @@ Route::post('/logout', [LoginController::class, 'logout'])
 // ── Halaman yang perlu login ────────────────────────────
 Route::middleware('auth:pegawai')->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
     // ── Master Data ────────────────────────────────────────────
