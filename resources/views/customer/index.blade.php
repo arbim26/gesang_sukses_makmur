@@ -30,10 +30,10 @@
                     <td>{{ $c->Nama }}</td>
                     <td>{{ $c->PIC }}</td>
                     <td>
-                        <a href="{{ route('customer.show', $c->Id_Cust) }}"
+                        {{-- <a href="{{ route('customer.show', $c->Id_Cust) }}"
                            class="btn btn-sm btn-outline-primary me-1">
                             <i class="bi bi-eye"></i>
-                        </a>
+                        </a> --}}
                         <a href="{{ route('customer.edit', $c->Id_Cust) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>

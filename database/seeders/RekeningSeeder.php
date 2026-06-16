@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class RekeningSeeder extends Seeder
 {
@@ -11,25 +12,18 @@ class RekeningSeeder extends Seeder
     {
         DB::table('rekenings')->insert([
             [
-                'Acc_No'     => 'BCA-001-123456',
+                'Acc_No'     => '4205563240',
+                'Bank'       => 'PERMATA',
+                'Nama'       => 'Syamsul Bahri Fitriyanto',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'Acc_No'     => '1234567890',
                 'Bank'       => 'BCA',
-                'Nama'       => 'PT Gesang Sukses Makmur',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'Acc_No'     => 'BRI-002-654321',
-                'Bank'       => 'BRI',
-                'Nama'       => 'PT Gesang Sukses Makmur',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'Acc_No'     => 'MANDIRI-003-789012',
-                'Bank'       => 'Bank Mandiri',
-                'Nama'       => 'PT Gesang Sukses Makmur',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'Nama'       => 'PT. Gesang Sukses Makmur',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
         ]);
     }

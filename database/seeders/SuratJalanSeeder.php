@@ -4,64 +4,40 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class SuratJalanSeeder extends Seeder
 {
     public function run(): void
     {
-        // Surat Jalan dibuat setelah Invoice diterbitkan
-        // Tidak semua PO langsung ada SJ (PO-007 & PO-008 masih proses)
-        $suratJalans = [
+        DB::table('surat_jalans')->insert([
             [
-                'No_SJ'      => 'SJ-2026-001',
-                'No_PO'      => 'PO-2026-001',
-                'Tanggal'    => '2026-01-23',
-                'Id_Supir'   => 'SUP-001',
-                'Keterangan' => 'Pengiriman ke gudang PT Maju Bersama Sejahtera, Jl. Raya Surabaya No.45',
+                'No_SJ'      => 'SJ-N-GSM/11/25/020',
+                'No_PO'      => 'PO-N-GSM/11/25/020',
+                'Tanggal'    => '2025-11-28',
+                'Id_Supir'   => 'PGW-005',   // Hendra Kusuma (Pengemudi)
+                'Keterangan' => 'Pengiriman Plate Besar 6 Pcs dan Plate Kecil 9 Pcs ke PT. Naura Technologi, Bekasi',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'No_SJ'      => 'SJ-2026-002',
-                'No_PO'      => 'PO-2026-002',
-                'Tanggal'    => '2026-01-28',
-                'Id_Supir'   => 'SUP-002',
-                'Keterangan' => 'Pengiriman ke CV Karya Mandiri, Jl. Industri Blok C No.12',
+                'No_SJ'      => 'SJ-MB-GSM/12/25/001',
+                'No_PO'      => 'PO-MB-GSM/12/25/001',
+                'Tanggal'    => '2025-12-16',
+                'Id_Supir'   => 'PGW-005',
+                'Keterangan' => 'Pengiriman Bracket Custom 4 Pcs dan Shaft Presisi 5 Pcs ke PT. Maju Bersama',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'No_SJ'      => 'SJ-2026-003',
-                'No_PO'      => 'PO-2026-003',
-                'Tanggal'    => '2026-02-18',
-                'Id_Supir'   => 'SUP-001',
-                'Keterangan' => 'Prioritas — proyek gedung kantor PT Sumber Rejeki Abadi',
+                'No_SJ'      => 'SJ-TM-GSM/01/26/001',
+                'No_PO'      => 'PO-TM-GSM/01/26/001',
+                'Tanggal'    => '2026-01-21',
+                'Id_Supir'   => 'PGW-005',
+                'Keterangan' => 'Pengiriman Dies Stamping 2 Set ke CV. Teknik Mandiri',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
-            [
-                'No_SJ'      => 'SJ-2026-004',
-                'No_PO'      => 'PO-2026-004',
-                'Tanggal'    => '2026-02-25',
-                'Id_Supir'   => 'SUP-003',
-                'Keterangan' => null,
-            ],
-            [
-                'No_SJ'      => 'SJ-2026-005',
-                'No_PO'      => 'PO-2026-005',
-                'Tanggal'    => '2026-03-13',
-                'Id_Supir'   => 'SUP-002',
-                'Keterangan' => 'Proyek perumahan cluster B — UD Jaya Teknik',
-            ],
-            [
-                'No_SJ'      => 'SJ-2026-006',
-                'No_PO'      => 'PO-2026-006',
-                'Tanggal'    => '2026-03-31',
-                'Id_Supir'   => 'SUP-001',
-                'Keterangan' => null,
-            ],
-            // PO-007 dan PO-008 belum ada SJ (Invoice baru terbit)
-        ];
-
-        foreach ($suratJalans as $sj) {
-            DB::table('surat_jalans')->insert(array_merge($sj, [
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]));
-        }
+        ]);
     }
 }
