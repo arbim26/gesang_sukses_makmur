@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('Qty');
             $table->decimal('Unit_Price', 15, 2);
             $table->decimal('Amount', 15, 2);
-            $table->enum('Metode', ['Transfer', 'Cash', 'Kredit']);
+            $table->string('Metode', 30);
             $table->timestamps();
 
             $table->foreign('No_PO')

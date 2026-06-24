@@ -13,7 +13,7 @@ $jabatanAktif = auth('pegawai')->user()->Jabatan;
 </div>
 
 <form action="{{ isset($po) ? route('purchase-order.update', $po->No_PO) : route('purchase-order.store') }}"
-      method="POST">
+      method="POST" enctype="multipart/form-data">
     @csrf
     @if(isset($po)) @method('PUT') @endif
 
@@ -67,6 +67,16 @@ $jabatanAktif = auth('pegawai')->user()->Jabatan;
                         <label class="form-label">Catatan</label>
                         <textarea name="Note" class="form-control" rows="3"
                             placeholder="Catatan tambahan...">{{ old('Note', $po->Note ?? '') }}</textarea>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label" for="attachment">Upload Dokumen/Nota PO (PDF, JPG, PNG)</label>
+                        <input type="file" name="attachment" id="attachment" class="form-control @error('attachment') is-invalid @enderror">
+                        @error('attachment')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                 </div>
             </div>

@@ -11,9 +11,9 @@
         <a href="{{ route('invoice.edit', $invoice->No_Invoice) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-pencil me-1"></i> Edit
         </a>
-        <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
+        <a href="{{ route('invoice.print', $invoice->No_Invoice) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-printer me-1"></i> Cetak
-        </button>
+        </a>
     </div>
 </div>
 

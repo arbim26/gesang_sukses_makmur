@@ -3,543 +3,529 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice {{ $invoice->No_Invoice }}</title>
+    <title>Invoice INV-N-GSM/11/25/020 — PT. Gesang Sukses Makmur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy:   #0d2344;
+            --navy2:  #163461;
+            --gold:   #c8992a;
+            --gold-lt:#e8b84b;
+            --ink:    #1a1a2e;
+            --muted:  #5a6278;
+            --rule:   #d4d8e2;
+            --bg:     #f4f5f8;
+            --white:  #ffffff;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #000;
-            background: #fff;
+        @media screen {
+            body {
+                background: var(--bg);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 40px 20px;
+                font-family: 'DM Sans', sans-serif;
+            }
+            .toolbar {
+                width: 210mm;
+                max-width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 18px;
+            }
+            .toolbar span {
+                font-size: 13px;
+                color: var(--muted);
+                font-family: 'DM Sans', sans-serif;
+            }
+            .btn-print {
+                background: var(--navy);
+                color: #fff;
+                border: none;
+                padding: 9px 22px;
+                border-radius: 6px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                letter-spacing: .4px;
+                transition: background .2s;
+            }
+            .btn-print:hover { background: var(--navy2); }
         }
 
         .page {
             width: 210mm;
             min-height: 297mm;
-            margin: 0 auto;
-            padding: 15mm 15mm 15mm 15mm;
+            max-width: 100%;
+            background: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* ── Header ── */
+        /* ── decorative top bar ── */
+        .top-bar {
+            height: 6px;
+            background: var(--navy);
+        }
+
+        .inner {
+            padding: 28px 32px 36px;
+        }
+
+        /* ── HEADER ── */
         .header {
             display: flex;
-            align-items: center;
-            margin-bottom: 6px;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1.5px solid var(--rule);
+            margin-bottom: 22px;
         }
 
-        .logo-circle {
-            width: 60px;
-            height: 60px;
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-mark {
+            width: 58px;
+            height: 58px;
             border-radius: 50%;
-            border: 3px solid #1a3a8f;
+            border: 2.5px solid var(--navy);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
             flex-shrink: 0;
+            background: var(--white);
         }
 
-        .logo-circle .gs-text {
-            font-size: 18px;
-            font-weight: 900;
-            color: #1a3a8f;
+        .logo-mark span {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
             letter-spacing: -1px;
         }
 
-        .company-info h1 {
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: #000;
-            font-family: Arial, sans-serif;
+        .company-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--navy);
+            letter-spacing: 1.5px;
+            line-height: 1.2;
         }
 
-        .company-info .tagline {
+        .company-tagline {
+            font-size: 9.5px;
+            color: var(--navy);
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .company-address {
             font-size: 9px;
-            color: #333;
-            font-style: italic;
-            font-weight: bold;
-            letter-spacing: 0.5px;
+            color: var(--muted);
+            margin-top: 4px;
+            line-height: 1.5;
         }
 
-        .company-info .address {
-            font-size: 8px;
-            color: #555;
-            margin-top: 2px;
-        }
-
-        .invoice-title-box {
-            border: 2px solid #000;
-            text-align: center;
-            padding: 4px 30px;
-            font-size: 16px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            margin: 10px 0;
-            display: inline-block;
+        .invoice-badge {
+            background: var(--navy);
+            color: #fff;
+            font-family: 'Playfair Display', serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            padding: 8px 22px;
+            border-radius: 4px;
             align-self: center;
         }
 
-        .header-right {
-            margin-left: auto;
-            text-align: right;
-        }
-
-        /* ── Customer & Meta Section ── */
-        .meta-section {
+        /* ── META SECTION ── */
+        .meta {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
             align-items: flex-start;
-        }
-
-        .customer-block {
-            flex: 1;
+            margin-bottom: 24px;
+            gap: 20px;
         }
 
         .customer-block .label {
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 3px;
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--navy);
+            margin-bottom: 5px;
         }
 
         .customer-block .name {
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--navy);
         }
 
-        .customer-block .address-line {
+        .customer-block .city {
             font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
         }
 
-        .invoice-meta {
-            min-width: 220px;
-        }
-
-        .invoice-meta table {
-            width: 100%;
-            font-size: 11px;
+        .meta-table {
             border-collapse: collapse;
+            font-size: 11px;
         }
 
-        .invoice-meta table td {
-            padding: 1px 3px;
+        .meta-table td {
+            padding: 3px 6px;
         }
 
-        .invoice-meta table td:first-child {
-            font-weight: normal;
+        .meta-table td:first-child {
+            color: var(--muted);
             white-space: nowrap;
+            padding-right: 4px;
         }
 
-        /* ── Items Table ── */
+        .meta-table td:nth-child(2) {
+            color: var(--muted);
+            padding: 3px 2px;
+        }
+
+        .meta-table td:last-child {
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        /* ── ITEMS TABLE ── */
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 4px;
+            margin-bottom: 0;
+            font-size: 11.5px;
         }
 
-        .items-table th,
-        .items-table td {
-            border: 1px solid #000;
-            padding: 5px 8px;
+        .items-table thead tr {
+            background: var(--navy);
+            color: #fff;
         }
 
         .items-table thead th {
-            background: #fff;
-            font-weight: bold;
-            text-align: center;
-            font-size: 11px;
+            padding: 9px 12px;
+            font-weight: 600;
+            font-size: 10.5px;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        .items-table thead th.c { text-align: center; }
+        .items-table thead th.r { text-align: right; }
+        .items-table thead th.l { text-align: left; }
+
+        .items-table tbody tr:nth-child(even) {
+            background: #f7f8fb;
+        }
+
+        .items-table tbody tr:nth-child(odd) {
+            background: var(--white);
+        }
+
+        .group-row td {
+            background: #eef0f5 !important;
+            font-weight: 600;
+            font-size: 10.5px;
+            letter-spacing: .4px;
+            color: var(--navy2);
+            padding: 6px 12px !important;
+            border-bottom: 1px solid var(--rule) !important;
+            text-transform: uppercase;
         }
 
         .items-table tbody td {
-            font-size: 11px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--rule);
+            color: var(--ink);
         }
 
-        .items-table .no-col { width: 35px; text-align: center; }
-        .items-table .desc-col { min-width: 200px; }
-        .items-table .qty-col { width: 70px; text-align: center; }
-        .items-table .price-col { width: 130px; text-align: right; }
-        .items-table .amount-col { width: 140px; text-align: right; }
+        .items-table tbody td.c { text-align: center; }
+        .items-table tbody td.r { text-align: right; }
 
-        .items-table .group-header td {
-            font-weight: bold;
-            font-size: 11px;
-            border-bottom: none;
+        .items-table tfoot tr td {
+            padding: 7px 12px;
+            font-size: 11.5px;
         }
 
-        /* Summary rows */
         .summary-row td {
-            border-left: none;
-            border-right: none;
-            border-bottom: none;
+            border-top: 1px solid var(--rule);
+        }
+
+        .summary-row td.label-cell {
             text-align: right;
-            padding: 3px 8px;
-            font-size: 11px;
+            color: var(--muted);
+            font-weight: 500;
         }
 
-        .summary-row td:last-child {
-            border: 1px solid #000;
-            min-width: 140px;
-        }
-
-        .summary-row td:nth-last-child(2) {
-            border: none;
-        }
-
-        .summary-grand td {
-            font-weight: bold;
-        }
-
-        /* Footer rows inside table */
-        .total-section {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .total-section td {
-            border: 1px solid #000;
-            padding: 4px 8px;
-            font-size: 11px;
-        }
-
-        .total-section .label-cell {
+        .summary-row td.val-cell {
             text-align: right;
-            font-weight: normal;
-            border-left: none;
+            font-weight: 500;
         }
 
-        .total-section .value-cell {
-            text-align: right;
-            min-width: 140px;
+        .grand-row td {
+            background: var(--navy);
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 12.5px;
         }
 
-        /* ── Footer ── */
-        .footer-section {
+        .grand-row td.label-cell {
+            color: rgba(255,255,255,.85) !important;
+        }
+
+        .grand-row td.val-cell {
+            color: var(--navy-lt) !important;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
             display: flex;
             justify-content: space-between;
-            margin-top: 16px;
             align-items: flex-start;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1.5px solid var(--rule);
+            gap: 20px;
         }
 
-        .note-block {
-            flex: 1;
-            max-width: 55%;
+        .note-label {
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--navy);
+            margin-bottom: 8px;
         }
 
-        .note-block .note-title {
+        .bank-table {
+            border-collapse: collapse;
             font-size: 11px;
-            font-weight: bold;
-            text-decoration: underline;
-            margin-bottom: 4px;
         }
 
-        .note-block .bank-info {
-            font-size: 11px;
+        .bank-table td {
+            padding: 2px 0;
         }
 
-        .note-block .bank-info p {
-            margin: 1px 0;
+        .bank-table td:first-child {
+            color: var(--muted);
+            width: 56px;
         }
 
-        .note-block .bank-info .field-row {
-            display: flex;
-            gap: 4px;
+        .bank-table td:nth-child(2) {
+            color: var(--muted);
+            padding: 2px 4px;
         }
 
-        .note-block .bank-info .field-row .fl {
-            min-width: 55px;
-            font-weight: normal;
+        .bank-table td:last-child {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .bank-note {
+            font-size: 10px;
+            color: var(--muted);
+            margin-bottom: 8px;
         }
 
         .signature-block {
             text-align: center;
-            min-width: 180px;
+            min-width: 160px;
         }
 
-        .signature-block .regards {
+        .regards {
             font-size: 11px;
-            margin-bottom: 8px;
-        }
-
-        .signature-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 2px solid #1a3a8f;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 8px auto;
-        }
-
-        .signature-circle .gs-logo {
-            font-size: 16px;
-            font-weight: 900;
-            color: #1a3a8f;
-        }
-
-        .signature-block .signer-name {
-            font-size: 11px;
-        }
-
-        /* ── Print settings ── */
-        @media print {
-            body { margin: 0; }
-            .page { margin: 0; padding: 10mm 12mm; }
-            .no-print { display: none !important; }
-        }
-
-        /* Screen preview toolbar */
-        @media screen {
-            body { background: #e5e7eb; }
-            .page {
-                margin: 20px auto;
-                box-shadow: 0 4px 24px rgba(0,0,0,.15);
-                background: #fff;
-            }
-            .print-toolbar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                background: #1a1a2e;
-                color: #fff;
-                padding: 10px 20px;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                z-index: 999;
-                font-family: Arial, sans-serif;
-                font-size: 13px;
-            }
-            .print-toolbar .btn-print {
-                background: #4f46e5;
-                color: #fff;
-                border: none;
-                padding: 6px 18px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 13px;
-                font-weight: bold;
-            }
-            .print-toolbar .btn-back {
-                background: transparent;
-                color: #aaa;
-                border: 1px solid #555;
-                padding: 6px 14px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 13px;
-                text-decoration: none;
-            }
-            .page { margin-top: 60px; }
-        }
-
-        .divider-line {
-            border-top: 1.5px solid #000;
-            margin: 6px 0;
-        }
-
-        .header-wrapper {
-            border-bottom: 2px solid #000;
-            padding-bottom: 8px;
+            color: var(--muted);
             margin-bottom: 10px;
         }
 
-        .header-top {
+        .sig-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 2px solid var(--navy);
             display: flex;
             align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
         }
 
-        .invoice-badge {
-            border: 2px solid #000;
-            padding: 4px 24px;
-            font-size: 15px;
-            font-weight: 900;
-            letter-spacing: 4px;
-            margin: 8px auto;
-            display: block;
-            text-align: center;
-            width: fit-content;
+        .sig-circle span {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .signer {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        /* ── bottom bar ── */
+        .bottom-bar {
+            height: 4px;
+            background: var(--navy);
+        }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .toolbar { display: none !important; }
+            .page { box-shadow: none; width: 100%; }
+            .top-bar, .bottom-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .items-table thead tr,
+            .grand-row td,
+            .group-row td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
 
-<div class="print-toolbar no-print">
-    <a href="{{ route('invoice.show', $invoice->No_Invoice) }}" class="btn-back">← Kembali</a>
-    <span style="flex:1; font-weight:bold;">Invoice {{ $invoice->No_Invoice }}</span>
+<div class="toolbar no-print">
+    <span>PT. Gesang Sukses Makmur — Invoice INV-N-GSM/11/25/020</span>
     <button class="btn-print" onclick="window.print()">🖨 Cetak</button>
 </div>
 
 <div class="page">
+    <div class="top-bar"></div>
+    <div class="inner">
 
-    {{-- ── HEADER ── --}}
-    <div class="header-wrapper">
-        <div class="header-top">
-            {{-- Logo --}}
-            <div class="logo-circle">
-                <span class="gs-text">GS</span>
-            </div>
-            {{-- Company name --}}
-            <div class="company-info">
-                <h1>PT. GESANG SUKSES MAKMUR</h1>
-                <div class="tagline">Machining, Jig, Mold, Dies, Precision Part, Fabrication</div>
-                <div class="address">
-                    Jl. Bernang Raya Blok 6-3 No.212 RT.003 RW.010 Jayamukti, Cikarang Pusat
-                    Telp. 021-89329258 &nbsp; Email : gs.makmur08@gmail.com
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo-area">
+                <div class="logo-mark"><span>GS</span></div>
+                <div>
+                    <div class="company-name">PT. GESANG SUKSES MAKMUR</div>
+                    <div class="company-tagline">Machining · Jig · Mold · Dies · Precision Part · Fabrication</div>
+                    <div class="company-address">
+                        Jl. Bernang Raya Blok 6-3 No.212 RT.003 RW.010 Jayamukti, Cikarang Pusat<br>
+                        Telp. 021-89329258 &nbsp;·&nbsp; Email: gs.makmur08@gmail.com
+                    </div>
                 </div>
             </div>
+            <div class="invoice-badge">INVOICE</div>
         </div>
-        <div class="invoice-badge">INVOICE</div>
-    </div>
 
-    {{-- ── CUSTOMER & META ── --}}
-    <div class="meta-section">
-        <div class="customer-block">
-            <div class="label">Customer :</div>
-            <div class="name">{{ $invoice->purchaseOrder->customer->Nama ?? '-' }}</div>
-            @if($invoice->purchaseOrder->customer->PIC ?? null)
-                <div class="address-line">{{ $invoice->purchaseOrder->customer->PIC }}</div>
-            @endif
-        </div>
-        <div class="invoice-meta">
-            <table>
+        <!-- META -->
+        <div class="meta">
+            <div class="customer-block">
+                <div class="label">Customer</div>
+                <div class="name">PT. NAURA TECHNOLOGI</div>
+                <div class="city">Bekasi</div>
+            </div>
+            <table class="meta-table">
                 <tr>
-                    <td>Nomor</td>
-                    <td>: {{ $invoice->No_Invoice }}</td>
+                    <td>Nomor</td><td>:</td>
+                    <td><strong>INV-N-GSM/11/25/020</strong></td>
                 </tr>
                 <tr>
-                    <td>Tanggal</td>
-                    <td>: {{ \Carbon\Carbon::parse($invoice->tanggal_terbit)->format('d F Y') }}</td>
+                    <td>Tanggal</td><td>:</td>
+                    <td>28 November 2025</td>
                 </tr>
                 <tr>
-                    <td>PO No</td>
-                    <td>: {{ $invoice->No_PO ?? ':-' }}</td>
+                    <td>PO No</td><td>:</td>
+                    <td>—</td>
                 </tr>
             </table>
         </div>
-    </div>
 
-    {{-- ── ITEMS TABLE ── --}}
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th class="no-col">No</th>
-                <th class="desc-col">Description</th>
-                <th class="qty-col">Qty</th>
-                <th class="price-col">Unit Price</th>
-                <th class="amount-col">Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{-- Group header based on Metode --}}
-            @php
-                $grouped = $invoice->purchaseOrder->details->groupBy('Metode');
-            @endphp
+        <!-- ITEMS TABLE -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th class="c" style="width:42px;">No</th>
+                    <th class="l">Description</th>
+                    <th class="c" style="width:80px;">Qty</th>
+                    <th class="r" style="width:140px;">Unit Price</th>
+                    <th class="r" style="width:148px;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Group -->
+                <tr class="group-row">
+                    <td></td>
+                    <td colspan="4">Proses Machining</td>
+                </tr>
+                <!-- Items -->
+                <tr>
+                    <td class="c">1</td>
+                    <td>PLATE BESAR</td>
+                    <td class="c">6 Pcs</td>
+                    <td class="r">Rp &nbsp;3.000.000</td>
+                    <td class="r">Rp &nbsp;18.000.000</td>
+                </tr>
+                <tr>
+                    <td class="c">2</td>
+                    <td>PLATE KECIL</td>
+                    <td class="c">9 Pcs</td>
+                    <td class="r">Rp &nbsp;1.800.000</td>
+                    <td class="r">Rp &nbsp;16.200.000</td>
+                </tr>
+                <!-- padding rows -->
+                <tr style="height:30px;"><td colspan="5"></td></tr>
+                <tr style="height:30px;"><td colspan="5"></td></tr>
+                <tr style="height:30px;"><td colspan="5"></td></tr>
+            </tbody>
+            <tfoot>
+                <tr class="summary-row">
+                    <td colspan="3" style="border:none;"></td>
+                    <td class="label-cell">Total</td>
+                    <td class="val-cell">Rp &nbsp;34.200.000</td>
+                </tr>
+                <tr class="summary-row">
+                    <td colspan="3" style="border:none;"></td>
+                    <td class="label-cell">Discount</td>
+                    <td class="val-cell">Rp &nbsp;—</td>
+                </tr>
+                <tr class="grand-row">
+                    <td colspan="3" style="border:none; background:var(--navy);"></td>
+                    <td class="label-cell" style="text-align:right; padding-right:12px;">Grand Total</td>
+                    <td class="val-cell">Rp &nbsp;34.200.000</td>
+                </tr>
+            </tfoot>
+        </table>
 
-            @foreach($grouped as $metode => $items)
-            <tr class="group-header">
-                <td></td>
-                <td><strong>{{ $metode }}</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            @foreach($items as $i => $d)
-            <tr>
-                <td class="no-col">{{ $i + 1 }}</td>
-                <td>{{ strtoupper($d->barang->Nama_Barang ?? $d->No_Barang) }}</td>
-                <td class="qty-col">{{ $d->Qty }} Pcs</td>
-                <td class="price-col">Rp &nbsp; {{ number_format($d->Unit_Price, 0, ',', '.') }}</td>
-                <td class="amount-col">Rp &nbsp; {{ number_format($d->Amount, 0, ',', '.') }}</td>
-            </tr>
-            @endforeach
-            @endforeach
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="note-block">
+                <div class="note-label">Note</div>
+                <p class="bank-note">Please transfer payment to:</p>
+                <table class="bank-table">
+                    <tr><td>Name</td><td>:</td><td>SYAMSUL BAHRI FITRIYANTO</td></tr>
+                    <tr><td>Bank</td><td>:</td><td>PERMATA</td></tr>
+                    <tr><td>Acc No</td><td>:</td><td>4205563240</td></tr>
+                </table>
+            </div>
 
-            {{-- Empty rows for spacing (like original form) --}}
-            @for($r = 0; $r < max(0, 5 - $invoice->purchaseOrder->details->count()); $r++)
-            <tr>
-                <td style="height:22px;">&nbsp;</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            @endfor
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3" style="border:none; border-top:1px solid #000;"></td>
-                <td style="text-align:right; border:1px solid #000; border-left:none; padding:4px 8px; font-size:11px;">Total</td>
-                <td style="text-align:right; border:1px solid #000; padding:4px 8px; font-size:11px;">
-                    Rp &nbsp; {{ number_format($subTotal, 0, ',', '.') }}
-                </td>
-            </tr>
-            <tr>
-                <td colspan="3" style="border:none;"></td>
-                <td style="text-align:right; border:1px solid #000; border-top:none; border-left:none; padding:4px 8px; font-size:11px;">Discount</td>
-                <td style="text-align:right; border:1px solid #000; border-top:none; padding:4px 8px; font-size:11px;">
-                    @if($diskon > 0)
-                        Rp &nbsp; {{ number_format($subTotal - $afterDisc, 0, ',', '.') }}
-                    @else
-                        Rp &nbsp; -
-                    @endif
-                </td>
-            </tr>
-            @if($ppn > 0)
-            <tr>
-                <td colspan="3" style="border:none;"></td>
-                <td style="text-align:right; border:1px solid #000; border-top:none; border-left:none; padding:4px 8px; font-size:11px;">PPN ({{ $ppn }}%)</td>
-                <td style="text-align:right; border:1px solid #000; border-top:none; padding:4px 8px; font-size:11px;">
-                    Rp &nbsp; {{ number_format($grandTotal - $afterDisc, 0, ',', '.') }}
-                </td>
-            </tr>
-            @endif
-            <tr>
-                <td colspan="3" style="border:none;"></td>
-                <td style="text-align:right; border:1px solid #000; border-top:none; border-left:none; padding:4px 8px; font-size:11px; font-weight:bold;">Grand Total</td>
-                <td style="text-align:right; border:1px solid #000; border-top:none; padding:4px 8px; font-size:11px; font-weight:bold;">
-                    Rp &nbsp; {{ number_format($grandTotal, 0, ',', '.') }}
-                </td>
-            </tr>
-        </tfoot>
-    </table>
-
-    {{-- ── FOOTER ── --}}
-    <div class="footer-section">
-        {{-- Note & Bank Info --}}
-        <div class="note-block">
-            <div class="note-title">NOTE :</div>
-            <div class="bank-info" style="margin-top:4px;">
-                <p style="margin-bottom:4px;">Please transfer payment to :</p>
-                @if($invoice->rekening)
-                <div class="field-row"><span class="fl">Name</span><span>: {{ $invoice->rekening->Nama }}</span></div>
-                <div class="field-row"><span class="fl">Bank</span><span>: {{ $invoice->rekening->Bank }}</span></div>
-                <div class="field-row"><span class="fl">Acc No</span><span>: {{ $invoice->Acc_No }}</span></div>
-                @else
-                <div class="field-row"><span class="fl">Name</span><span>: —</span></div>
-                <div class="field-row"><span class="fl">Bank</span><span>: —</span></div>
-                <div class="field-row"><span class="fl">Acc No</span><span>: —</span></div>
-                @endif
+            <div class="signature-block">
+                <div class="regards">Best Regards,</div>
+                <div class="sig-circle"><span>GS</span></div>
+                <div class="signer">( Syamsul Bahri Fitriyanto )</div>
             </div>
         </div>
 
-        {{-- Signature --}}
-        <div class="signature-block">
-            <div class="regards">Best Regards,</div>
-            <div class="signature-circle">
-                <span class="gs-logo">GS</span>
-            </div>
-            <div class="signer-name">( {{ $invoice->ceo->Nama_Pegawai ?? $invoice->sekretaris->Nama_Pegawai ?? 'Syamsul Bahri Fitriyanto' }} )</div>
-        </div>
-    </div>
-
+    </div><!-- /inner -->
+    <div class="bottom-bar"></div>
 </div>
+
 </body>
 </html>

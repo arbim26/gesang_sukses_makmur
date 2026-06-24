@@ -21,6 +21,7 @@
 <div class="card">
     <div class="card-body p-0">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <table class="table mb-0">
             <thead>
                 <tr>
@@ -66,6 +67,8 @@
             </tbody>
         </table>
 =======
+=======
+>>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
         <div class="table-responsive">
             <table class="table mb-0">
                 <thead>
@@ -116,8 +119,30 @@
                 </tbody>
             </table>
         </div>
+<<<<<<< HEAD
 >>>>>>> f51e716 (add JWT and Multi Role)
+=======
+>>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
     </div>
 </div>
-<div class="mt-3">{{ $barangs->links() }}</div>
+
+{{-- Perbaikan Pagination dengan Bootstrap 5 dan informasi halaman --}}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-2">
+    <div class="text-muted small">
+        Menampilkan {{ $barangs->firstItem() ?? 0 }} - {{ $barangs->lastItem() ?? 0 }} dari total {{ $barangs->total() }} barang
+    </div>
+    <div>
+        @if ($barangs->hasPages())
+            {{ $barangs->onEachSide(1)->links('pagination::bootstrap-5') }}
+        @else
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    <li class="page-item active"><span class="page-link">1</span></li>
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                </ul>
+            </nav>
+        @endif
+    </div>
+</div>
 @endsection

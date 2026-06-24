@@ -4,93 +4,49 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class InvoiceSeeder extends Seeder
 {
     public function run(): void
     {
-        // Setiap PO menghasilkan 1 Invoice (sesuai alur bisnis umum)
-        // Discount dalam persen, Grand_Total = Sub_Total PO * (1 - discount/100) * 1.11 PPN
-        $invoices = [
+        DB::table('invoices')->insert([
+            // Invoice sesuai foto
             [
-                'No_Invoice'    => 'INV-2026-001',
-                'No_PO'         => 'PO-2026-001',
-                'tanggal_terbit'=> '2026-01-22',
-                'discount'      => 5.00,
-                'Id_CEO'        => 'CEO-001',
-                'Id_Sekretaris' => 'SEK-001',
-                'Acc_No'        => 'BCA-001-123456',
+                'No_Invoice'     => 'INV-N-GSM/11/25/020',
+                'No_PO'          => 'PO-N-GSM/11/25/020',
+                'tanggal_terbit' => '2025-11-28',
+                'discount'       => 0.00,
+                'Id_CEO'         => 'PGW-001',  // Syamsul Bahri Fitriyanto (Direksi)
+                'Id_Sekretaris'  => 'PGW-002',  // Rina Agustina (Sekretaris)
+                'Acc_No'         => '4205563240',
+                'created_at'     => Carbon::now(),
+                'updated_at'     => Carbon::now(),
             ],
+            // Invoice kedua contoh
             [
-                'No_Invoice'    => 'INV-2026-002',
-                'No_PO'         => 'PO-2026-002',
-                'tanggal_terbit'=> '2026-01-27',
-                'discount'      => 0.00,
-                'Id_CEO'        => 'CEO-001',
-                'Id_Sekretaris' => 'SEK-001',
-                'Acc_No'        => 'BRI-002-654321',
+                'No_Invoice'     => 'INV-MB-GSM/12/25/001',
+                'No_PO'          => 'PO-MB-GSM/12/25/001',
+                'tanggal_terbit' => '2025-12-16',
+                'discount'       => 5.00,
+                'Id_CEO'         => 'PGW-001',
+                'Id_Sekretaris'  => 'PGW-002',
+                'Acc_No'         => '4205563240',
+                'created_at'     => Carbon::now(),
+                'updated_at'     => Carbon::now(),
             ],
+            // Invoice ketiga contoh
             [
-                'No_Invoice'    => 'INV-2026-003',
-                'No_PO'         => 'PO-2026-003',
-                'tanggal_terbit'=> '2026-02-17',
-                'discount'      => 10.00,
-                'Id_CEO'        => 'CEO-001',
-                'Id_Sekretaris' => 'SEK-002',
-                'Acc_No'        => 'BCA-001-123456',
+                'No_Invoice'     => 'INV-TM-GSM/01/26/001',
+                'No_PO'          => 'PO-TM-GSM/01/26/001',
+                'tanggal_terbit' => '2026-01-21',
+                'discount'       => 0.00,
+                'Id_CEO'         => 'PGW-001',
+                'Id_Sekretaris'  => 'PGW-002',
+                'Acc_No'         => '1234567890',
+                'created_at'     => Carbon::now(),
+                'updated_at'     => Carbon::now(),
             ],
-            [
-                'No_Invoice'    => 'INV-2026-004',
-                'No_PO'         => 'PO-2026-004',
-                'tanggal_terbit'=> '2026-02-24',
-                'discount'      => 0.00,
-                'Id_CEO'        => 'CEO-001',
-                'Id_Sekretaris' => 'SEK-001',
-                'Acc_No'        => 'MANDIRI-003-789012',
-            ],
-            [
-                'No_Invoice'    => 'INV-2026-005',
-                'No_PO'         => 'PO-2026-005',
-                'tanggal_terbit'=> '2026-03-12',
-                'discount'      => 3.00,
-                'Id_CEO'        => 'CEO-001',
-                'Id_Sekretaris' => 'SEK-002',
-                'Acc_No'        => 'BCA-001-123456',
-            ],
-            [
-                'No_Invoice'    => 'INV-2026-006',
-                'No_PO'         => 'PO-2026-006',
-                'tanggal_terbit'=> '2026-03-30',
-                'discount'      => 0.00,
-                'Id_CEO'        => 'CEO-001',
-                'Id_Sekretaris' => 'SEK-001',
-                'Acc_No'        => 'BRI-002-654321',
-            ],
-            [
-                'No_Invoice'    => 'INV-2026-007',
-                'No_PO'         => 'PO-2026-007',
-                'tanggal_terbit'=> '2026-04-16',
-                'discount'      => 5.00,
-                'Id_CEO'        => 'CEO-001',
-                'Id_Sekretaris' => 'SEK-002',
-                'Acc_No'        => 'MANDIRI-003-789012',
-            ],
-            [
-                'No_Invoice'    => 'INV-2026-008',
-                'No_PO'         => 'PO-2026-008',
-                'tanggal_terbit'=> '2026-05-05',
-                'discount'      => 0.00,
-                'Id_CEO'        => 'CEO-001',
-                'Id_Sekretaris' => 'SEK-001',
-                'Acc_No'        => 'BCA-001-123456',
-            ],
-        ];
-
-        foreach ($invoices as $inv) {
-            DB::table('invoices')->insert(array_merge($inv, [
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]));
-        }
+        ]);
     }
 }

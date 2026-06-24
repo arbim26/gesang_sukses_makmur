@@ -40,12 +40,15 @@
                     @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                     <td>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <a href="{{ route('customer.show', $c->Id_Cust) }}"
                            class="btn btn-sm btn-outline-primary me-1">
                             <i class="bi bi-eye"></i>
                         </a>
 =======
 >>>>>>> f51e716 (add JWT and Multi Role)
+=======
+>>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
                         <a href="{{ route('customer.edit', $c->Id_Cust) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>
@@ -73,5 +76,22 @@
         </table>
     </div>
 </div>
-<div class="mt-3">{{ $customers->links() }}</div>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-2">
+    <div class="text-muted small">
+        Menampilkan {{ $customers->firstItem() ?? 0 }} - {{ $customers->lastItem() ?? 0 }} dari total {{ $customers->total() }} barang
+    </div>
+    <div>
+        @if ($customers->hasPages())
+            {{ $customers->onEachSide(1)->links('pagination::bootstrap-5') }}
+        @else
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    <li class="page-item active"><span class="page-link">1</span></li>
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                </ul>
+            </nav>
+        @endif
+    </div>
+</div>
 @endsection

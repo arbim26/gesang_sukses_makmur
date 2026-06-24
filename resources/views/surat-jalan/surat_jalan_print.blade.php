@@ -1,365 +1,417 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surat Jalan {{ $suratJalan->No_SJ }}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surat Jalan {{ $suratJalan->No_SJ }}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            color: #000;
-            background: #fff;
-        }
+  :root {
+    --navy: #0D1F4E;
+    --navy-mid: #1a3a8f;
+    --navy-light: #e8edf8;
+    --gold: #C8960C;
+    --gold-light: #fdf6e3;
+    --ink: #1a1a2a;
+    --muted: #6b7280;
+    --border: #d1d9ee;
+    --surface: #f7f8fc;
+  }
 
-        .page {
-            width: 210mm;
-            min-height: 148mm; /* A5 height-ish, like a delivery note booklet */
-            margin: 0 auto;
-            padding: 10mm 14mm 10mm 14mm;
-        }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0f2f8;
+    color: var(--ink);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
-        /* ── Header ── */
-        .header {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 6px;
-            border-bottom: 2px solid #1a3a8f;
-            padding-bottom: 8px;
-        }
+  /* ── TOOLBAR ── */
+  .toolbar {
+    background: var(--navy);
+    color: #fff;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .toolbar span { flex: 1; font-weight: 500; opacity: 0.85; }
+  .btn-back {
+    background: transparent;
+    color: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-print {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 7px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.3px;
+  }
+  .btn-print:hover { background: #b5830a; }
 
-        .logo-circle {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            border: 3px solid #1a3a8f;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
+  /* ── PAGE ── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 24px auto;
+    background: #fff;
+    padding: 14mm 16mm 14mm 16mm;
+    box-shadow: 0 2px 32px rgba(13,31,78,0.10);
+  }
 
-        .logo-circle .gs-text {
-            font-size: 16px;
-            font-weight: 900;
-            color: #1a3a8f;
-            letter-spacing: -1px;
-        }
+  /* ── HEADER BAND ── */
+  .header-band {
+    background: var(--navy);
+    margin: -14mm -16mm 0 -16mm;
+    padding: 10mm 16mm 9mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-        .company-info h1 {
-            font-size: 18px;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            color: #1a3a8f;
-            font-family: Arial, sans-serif;
-        }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-badge {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-badge span {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .company-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: 1.5px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .company-tagline {
+    font-size: 9px;
+    color: rgba(255,255,255,0.65);
+    font-style: italic;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+  }
+  .company-address {
+    font-size: 8px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+  }
 
-        .company-info .tagline {
-            font-size: 8.5px;
-            color: #333;
-            font-style: italic;
-            font-weight: bold;
-            letter-spacing: 0.3px;
-            margin-top: 1px;
-        }
+  .sj-badge-wrap { text-align: right; }
+  .sj-badge {
+    display: inline-block;
+    border: 1.5px solid rgba(255,255,255,0.45);
+    color: #fff;
+    padding: 6px 20px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    letter-spacing: 5px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.08);
+  }
 
-        .company-info .address {
-            font-size: 7.5px;
-            color: #555;
-            margin-top: 3px;
-            line-height: 1.4;
-        }
+  /* ── GOLD LINE ── */
+  .gold-line {
+    height: 3px;
+    background: var(--navy);
+    margin: 0 -16mm 16px -16mm;
+  }
 
-        /* ── Title ── */
-        .sj-title-block {
-            margin-bottom: 8px;
-        }
+  /* ── META ── */
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
 
-        .sj-title {
-            font-size: 15px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            text-align: center;
-            color: #1a3a8f;
-            margin: 6px 0 4px 0;
-            text-decoration: underline;
-        }
+  .kepada-block { flex: 1; }
+  .kepada-block .to-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--navy);
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  .kepada-block .cust-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+  .kepada-block .cust-sub {
+    font-size: 11px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+    min-width: 200px;
+    display: inline-block;
+  }
 
-        /* Meta table: Kepada Yth., No. SJ, Tanggal, No. PO */
-        .meta-block {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
+  .meta-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 220px;
+  }
+  .meta-table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  .meta-table-wrap tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+  .meta-table-wrap td { padding: 7px 12px; }
+  .meta-table-wrap td:first-child {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.02);
+    width: 90px;
+  }
+  .meta-table-wrap td:last-child { font-weight: 500; color: var(--navy); }
 
-        .kepada-block {
-            flex: 1;
-        }
+  /* ── ITEMS TABLE ── */
+  .items-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 22px;
+  }
 
-        .kepada-block .kepada-label {
-            font-size: 10px;
-            margin-bottom: 2px;
-        }
+  .items-table thead tr th {
+    background: var(--navy);
+    color: rgba(255,255,255,0.88);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 9px 12px;
+    border: none;
+    text-align: left;
+  }
+  .items-table thead tr th.center { text-align: center; }
 
-        .kepada-block .kepada-value {
-            font-size: 11px;
-            font-weight: bold;
-            border-bottom: 1px solid #000;
-            min-width: 200px;
-            padding-bottom: 2px;
-        }
+  .items-table tbody tr td {
+    padding: 9px 12px;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .items-table tbody tr:last-child td { border-bottom: none; }
+  .items-table tbody tr:hover td { background: #f7f8fc; }
 
-        .sj-meta {
-            min-width: 230px;
-        }
+  .no-col { width: 32px; text-align: center; color: var(--muted); font-size: 11px; }
+  .kode-col { width: 95px; font-family: monospace; font-size: 11px; color: var(--muted); }
+  .nama-col { font-weight: 500; color: var(--ink); }
+  .qty-col { width: 60px; text-align: center; font-weight: 600; }
+  .ket-col { width: 110px; font-size: 10.5px; color: var(--muted); }
 
-        .sj-meta table {
-            width: 100%;
-            font-size: 10px;
-            border-collapse: collapse;
-        }
+  .empty-row td { height: 26px; }
 
-        .sj-meta table td {
-            padding: 1px 3px;
-        }
+  /* ── FOOTER SIGNATURE ── */
+  .footer-sig {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 10px;
+  }
 
-        /* ── Items Table ── */
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 6px;
-        }
+  .sig-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 20px;
+    text-align: center;
+    min-width: 175px;
+  }
+  .sig-card .sig-role {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+  }
+  .sig-card .sig-from {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 38px;
+  }
+  .sig-card .sig-line {
+    border-top: 1px solid var(--border);
+    margin: 0 auto 6px;
+    width: 100%;
+  }
+  .sig-card .sig-name {
+    font-size: 10.5px;
+    color: var(--muted);
+    font-style: italic;
+  }
 
-        .items-table th,
-        .items-table td {
-            border: 1px solid #1a3a8f;
-            padding: 4px 7px;
-        }
+  /* ── PRINT ── */
+  @media print {
+    body { background: #fff; }
+    .toolbar { display: none; }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      padding: 10mm 14mm;
+    }
+    .header-band { margin: -10mm -14mm 0 -14mm; padding: 8mm 14mm 7mm; }
+    .gold-line { margin: 0 -14mm 14px; }
+  }
 
-        .items-table thead th {
-            background: #fff;
-            font-weight: bold;
-            text-align: center;
-            font-size: 10px;
-            color: #1a3a8f;
-        }
-
-        .items-table tbody td {
-            font-size: 10px;
-            min-height: 18px;
-        }
-
-        .items-table .no-col { width: 30px; text-align: center; }
-        .items-table .kode-col { width: 90px; }
-        .items-table .nama-col { min-width: 160px; }
-        .items-table .qty-col { width: 60px; text-align: center; }
-        .items-table .ket-col { width: 100px; }
-
-        /* ── Signature Footer ── */
-        .footer-sig {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 12px;
-        }
-
-        .sig-block {
-            text-align: center;
-            min-width: 160px;
-        }
-
-        .sig-block .sig-title {
-            font-size: 10px;
-            margin-bottom: 35px; /* space for signature */
-        }
-
-        .sig-block .sig-line {
-            border-top: 1px solid #000;
-            width: 130px;
-            margin: 0 auto 3px auto;
-        }
-
-        .sig-block .sig-name {
-            font-size: 10px;
-            font-style: italic;
-        }
-
-        /* ── Print settings ── */
-        @media print {
-            body { margin: 0; }
-            .page { margin: 0; padding: 8mm 12mm; }
-            .no-print { display: none !important; }
-        }
-
-        @media screen {
-            body { background: #e5e7eb; }
-            .page {
-                margin: 20px auto;
-                box-shadow: 0 4px 24px rgba(0,0,0,.15);
-                background: #fff;
-                min-height: 297mm; /* Show as full A4 on screen */
-            }
-            .print-toolbar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                background: #1a1a2e;
-                color: #fff;
-                padding: 10px 20px;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                z-index: 999;
-                font-family: Arial, sans-serif;
-                font-size: 13px;
-            }
-            .print-toolbar .btn-print {
-                background: #4f46e5;
-                color: #fff;
-                border: none;
-                padding: 6px 18px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 13px;
-                font-weight: bold;
-            }
-            .print-toolbar .btn-back {
-                background: transparent;
-                color: #aaa;
-                border: 1px solid #555;
-                padding: 6px 14px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 13px;
-                text-decoration: none;
-            }
-            .page { margin-top: 60px; }
-        }
-    </style>
+  @media screen {
+    .page { margin-top: 56px; }
+  }
+</style>
 </head>
 <body>
 
-<div class="print-toolbar no-print">
-    <a href="{{ route('surat-jalan.show', $suratJalan->No_SJ) }}" class="btn-back">← Kembali</a>
-    <span style="flex:1; font-weight:bold;">Surat Jalan {{ $suratJalan->No_SJ }}</span>
-    <button class="btn-print" onclick="window.print()">🖨 Cetak</button>
+<div class="toolbar no-print">
+  <a href="{{ route('surat-jalan.show', $suratJalan->No_SJ) }}" class="btn-back">← Kembali</a>
+  <span>Surat Jalan {{ $suratJalan->No_SJ }}</span>
+  <button class="btn-print" onclick="window.print()">🖨 Cetak</button>
 </div>
 
 <div class="page">
 
-    {{-- ── HEADER ── --}}
-    <div class="header">
-        <div class="logo-circle">
-            <span class="gs-text">GS</span>
+  <!-- HEADER -->
+  <div class="header-band">
+    <div class="logo-area">
+      <div class="logo-badge"><span>GS</span></div>
+      <div>
+        <div class="company-name">PT. GESANG SUKSES MAKMUR</div>
+        <div class="company-tagline">Machining · Jig · Mold · Dies · Precision Part · Fabrication</div>
+        <div class="company-address">
+          Jl. Bernang Raya Blok G3 No. 212 RT.003 RW.010 Jayamukti, Cikarang Pusat &nbsp;·&nbsp; Telp. 021-89329258 &nbsp;·&nbsp; gs.makmur08@gmail.com<br>
+          Workshop : Jl. Pasir Gombong RT.04 RW.06 Belakang Ruko Hario Irigasi
         </div>
-        <div class="company-info">
-            <h1>PT. GESANG SUKSES MAKMUR</h1>
-            <div class="tagline">Machining, Jig, Mold, Dies, Precision Part, Fabrication</div>
-            <div class="address">
-                Jl. Bernang Raya Blok G3 No. 212 RT.003 RW.010 Jayamukti, Cikarang Pusat Telp. 021-89329258 &nbsp; Email : gs.makmur08@gmail.com<br>
-                Workshop : Jl. Pasir Gombong RT.04 RW.06 Belakang Ruko Hario Irigasi
-            </div>
-        </div>
+      </div>
+    </div>
+    <div class="sj-badge-wrap">
+      <div class="sj-badge">SURAT JALAN</div>
+    </div>
+  </div>
+
+  <div class="gold-line"></div>
+
+  <!-- META -->
+  <div class="meta-row">
+    <div class="kepada-block">
+      <div class="to-label">Kepada Yth.</div>
+      <div class="cust-name">{{ $suratJalan->purchaseOrder->customer->Nama ?? '-' }}</div>
+      <div class="cust-sub">&nbsp;</div>
+    </div>
+    <div class="meta-table-wrap">
+      <table>
+        <tr>
+          <td>No. Surat Jalan</td>
+          <td>{{ $suratJalan->No_SJ }}</td>
+        </tr>
+        <tr>
+          <td>Tanggal</td>
+          <td>{{ \Carbon\Carbon::parse($suratJalan->Tanggal)->format('d F Y') }}</td>
+        </tr>
+        <tr>
+          <td>No. PO</td>
+          <td>{{ $suratJalan->No_PO }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ITEMS TABLE -->
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th class="no-col center">No</th>
+        <th class="kode-col">Kode Barang</th>
+        <th class="nama-col">Nama Barang</th>
+        <th class="qty-col center">Qty</th>
+        <th class="ket-col">Keterangan</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($suratJalan->purchaseOrder->details as $i => $d)
+      <tr>
+        <td class="no-col">{{ $i + 1 }}</td>
+        <td class="kode-col">{{ $d->No_Barang }}</td>
+        <td class="nama-col">{{ $d->barang->Nama_Barang ?? '-' }}</td>
+        <td class="qty-col">{{ $d->Qty }}</td>
+        <td class="ket-col">
+          @if($i === 0 && $suratJalan->Keterangan)
+            {{ $suratJalan->Keterangan }}
+          @endif
+        </td>
+      </tr>
+      @endforeach
+
+      @for($r = 0; $r < max(0, 6 - $suratJalan->purchaseOrder->details->count()); $r++)
+      <tr class="empty-row">
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      @endfor
+    </tbody>
+  </table>
+
+  <!-- SIGNATURE FOOTER -->
+  <div class="footer-sig">
+    <div class="sig-card">
+      <div class="sig-role">Penerima</div>
+      <div class="sig-from">Cap / Tanda Tangan &amp; Tanggal</div>
+      <div class="sig-line"></div>
+      <div class="sig-name">( ............................................. )</div>
     </div>
 
-    {{-- ── TITLE ── --}}
-    <div class="sj-title">SURAT JALAN</div>
-
-    {{-- ── META ── --}}
-    <div class="meta-block">
-        <div class="kepada-block">
-            <div class="kepada-label">Kepada Yth.</div>
-            <div class="kepada-value">{{ $suratJalan->purchaseOrder->customer->Nama ?? '-' }}</div>
-        </div>
-        <div class="sj-meta">
-            <table>
-                <tr>
-                    <td>No. Surat Jalan</td>
-                    <td>: {{ $suratJalan->No_SJ }}</td>
-                </tr>
-                <tr>
-                    <td>Tanggal</td>
-                    <td>: {{ \Carbon\Carbon::parse($suratJalan->Tanggal)->format('d F Y') }}</td>
-                </tr>
-                <tr>
-                    <td>No. PO</td>
-                    <td>: {{ $suratJalan->No_PO }}</td>
-                </tr>
-            </table>
-        </div>
+    <div class="sig-card">
+      <div class="sig-role">Pengirim</div>
+      <div class="sig-from">PT. Gesang Sukses Makmur</div>
+      <div class="sig-line"></div>
+      <div class="sig-name">( {{ $suratJalan->supir->Nama_Pegawai ?? '.............................................' }} )</div>
     </div>
-
-    {{-- ── ITEMS TABLE ── --}}
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th class="no-col">No</th>
-                <th class="kode-col">Kode Barang</th>
-                <th class="nama-col">Nama Barang</th>
-                <th class="qty-col">Qty</th>
-                <th class="ket-col">Keterangan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($suratJalan->purchaseOrder->details as $i => $d)
-            <tr>
-                <td class="no-col">{{ $i + 1 }}</td>
-                <td class="kode-col">{{ $d->No_Barang }}</td>
-                <td class="nama-col">{{ $d->barang->Nama_Barang ?? '-' }}</td>
-                <td class="qty-col">{{ $d->Qty }}</td>
-                <td class="ket-col">
-                    @if($i === 0 && $suratJalan->Keterangan)
-                        {{ $suratJalan->Keterangan }}
-                    @endif
-                </td>
-            </tr>
-            @endforeach
-
-            {{-- Empty rows --}}
-            @for($r = 0; $r < max(0, 6 - $suratJalan->purchaseOrder->details->count()); $r++)
-            <tr>
-                <td style="height:20px;">&nbsp;</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            @endfor
-        </tbody>
-    </table>
-
-    {{-- ── SIGNATURE FOOTER ── --}}
-    <div class="footer-sig">
-        {{-- Penerima --}}
-        <div class="sig-block">
-            <div class="sig-title">
-                Penerima,<br>
-                Cap/Tanda tangan &amp; Tanggal
-            </div>
-            <br><br><br>
-            <div class="sig-line"></div>
-            <div class="sig-name">( .................................................. )</div>
-        </div>
-
-        {{-- Pengirim --}}
-        <div class="sig-block">
-            <div class="sig-title">
-                Pengirim,<br>
-                PT. Gesang Sukses Makmur
-            </div>
-            <br><br><br>
-            <div class="sig-line"></div>
-            <div class="sig-name">( {{ $suratJalan->supir->Nama_Pegawai ?? '..........................................' }} )</div>
-        </div>
-    </div>
+  </div>
 
 </div>
 </body>

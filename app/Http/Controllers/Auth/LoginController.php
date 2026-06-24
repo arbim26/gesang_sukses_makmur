@@ -40,6 +40,7 @@ class LoginController extends Controller
         $pegawai = Pegawai::where('Id_Pegawai', $request->id_pegawai)->first();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         $credentials = [
             'Id_Pegawai' => $request->id_pegawai, // Sesuai kolom DB (Kapital)
@@ -61,6 +62,8 @@ class LoginController extends Controller
         // ]);
         if (Auth::guard('pegawai')->attempt($credentials, $remember)){
 =======
+=======
+>>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
         // 3. Verifikasi: Apakah pegawai ditemukan & password-nya cocok?
         if ($pegawai && Hash::check($request->password, $pegawai->password)) {
             
@@ -69,7 +72,10 @@ class LoginController extends Controller
             Auth::guard('pegawai')->login($pegawai, $remember);
             
             // 5. Regenerasi session agar aman dari session fixation
+<<<<<<< HEAD
 >>>>>>> f51e716 (add JWT and Multi Role)
+=======
+>>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
             $request->session()->regenerate();
             
             return redirect()->route('dashboard');

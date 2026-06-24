@@ -280,19 +280,21 @@
     <main class="page-content">
         {{-- Alert Messages --}}
         @if(session('success'))
-            <div class="alert alert-success d-flex align-items-center gap-2">
+            <div class="alert alert-success d-flex align-items-center gap-2 alert-dismissible-auto" role="alert">
                 <i class="bi bi-check-circle-fill"></i>
                 {{ session('success') }}
             </div>
         @endif
+
         @if(session('error'))
-            <div class="alert alert-danger d-flex align-items-center gap-2">
+            <div class="alert alert-danger d-flex align-items-center gap-2 alert-dismissible-auto" role="alert">
                 <i class="bi bi-x-circle-fill"></i>
                 {{ session('error') }}
             </div>
         @endif
+
         @if($errors->any())
-            <div class="alert alert-danger">
+            <div class="alert alert-danger alert-dismissible-auto" role="alert">
                 <ul class="mb-0 ps-3" style="font-size:.85rem;">
                     @foreach($errors->all() as $err)
                         <li>{{ $err }}</li>
@@ -300,7 +302,6 @@
                 </ul>
             </div>
         @endif
-    </div>
 
         {{-- Dynamic content --}}
         @yield('content')
