@@ -2,14 +2,20 @@
 @section('title', 'Barang')
 @section('page-title', 'Manajemen Barang')
 
+@php
+    $jabatanAktif = auth('pegawai')->user()->Jabatan;
+@endphp
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <p class="text-muted mb-0" style="font-size:.85rem;">
         Total <strong>{{ $barangs->total() }}</strong> barang
     </p>
-    <a href="{{ route('barang.create') }}" class="btn btn-accent">
-        <i class="bi bi-plus-lg me-1"></i> Tambah Barang
-    </a>
+    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
+        <a href="{{ route('pegawai.create') }}" class="btn btn-accent">
+            <i class="bi bi-plus-lg"></i> Tambah Pegawai
+        </a>
+    @endif
 </div>
 
 <div class="card">
@@ -21,7 +27,9 @@
                         <th>Kode Barang</th>
                         <th>Nama Barang</th>
                         <th>Unit Price</th>
+                        @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                         <th style="width:130px;">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -34,6 +42,7 @@
                                 Rp {{ number_format($b->Unit_Price, 0, ',', '.') }}
                             </span>
                         </td>
+                        @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                         <td>
                             <a href="{{ route('barang.edit', $b->Kode_Barang) }}"
                                class="btn btn-sm btn-outline-secondary me-1">
@@ -48,6 +57,7 @@
                                 </button>
                             </form>
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr>

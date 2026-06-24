@@ -7,8 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
             --sidebar-w: 240px;
@@ -109,14 +107,11 @@
         }
         .topbar-actions { display: flex; gap: 8px; align-items: center; }
         
-        /* ── SINGLE PAGE CONTENT (GAP TERHAPUS) ── */
         .page-content {
             padding: 1.75rem;
             flex: 1;
             background: var(--surface);
         }
-        
-        /* Tidak ada lagi duplikasi .page-content, hanya SATU wadah utama untuk flash + konten */
         
         /* ── Cards ── */
         .card {
@@ -159,13 +154,6 @@
         }
         .btn-accent:hover { background: #4338ca; color: #fff; }
         .btn-sm { font-size: .75rem; padding: .3rem .7rem; border-radius: 6px; }
-        /* ── Badge status ── */
-        .badge-pill {
-            font-size: .7rem;
-            font-weight: 500;
-            padding: .3em .75em;
-            border-radius: 999px;
-        }
         /* ── Form ── */
         .form-label { font-size: .8rem; font-weight: 500; color: var(--brand); margin-bottom: .3rem; }
         .form-control, .form-select {
@@ -178,7 +166,7 @@
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(79,70,229,.12);
         }
-        /* ── Alert styling (mulus, tanpa margin berlebih) ── */
+        /* ── Alert styling ── */
         .alert {
             border-radius: 10px;
             font-size: .875rem;
@@ -187,12 +175,10 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
             transition: opacity 0.25s ease;
         }
-        /* Animasi fade-out untuk alert yang akan dihapus */
         .alert-fade-out {
             opacity: 0 !important;
             transition: opacity 0.25s ease !important;
         }
-        /* ── Responsive ── */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .main-wrap { margin-left: 0; }
@@ -201,7 +187,7 @@
 </head>
 <body>
 
-{{-- ──── SIDEBAR (TIDAK BERUBAH) ──────────────────────────────── --}}
+{{-- ──── SIDEBAR DENGAN FILTRASI JABATAN (ROLE) ──────────────────────────────── --}}
 <nav class="sidebar">
     <div class="sidebar-brand">
         <span>InvoiceApp</span>
@@ -215,38 +201,57 @@
             <i class="bi bi-speedometer2"></i> Dashboard
         </a>
 
-        <p class="nav-section">Master Data</p>
-        <a href="{{ route('pegawai.index') }}"
-           class="nav-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
-            <i class="bi bi-person-badge"></i> Pegawai
-        </a>
-        <a href="{{ route('customer.index') }}"
-           class="nav-link {{ request()->routeIs('customer.*') ? 'active' : '' }}">
-            <i class="bi bi-people"></i> Customer
-        </a>
-        <a href="{{ route('barang.index') }}"
-           class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
-            <i class="bi bi-box-seam"></i> Barang
-        </a>
-        <a href="{{ route('rekening.index') }}"
-           class="nav-link {{ request()->routeIs('rekening.*') ? 'active' : '' }}">
-            <i class="bi bi-bank"></i> Rekening
-        </a>
+        @php
+            $jabatan = auth('pegawai')->user()->Jabatan ?? '';
+        @endphp
 
+        
+        @if(in_array($jabatan, ['Staf IT', 'Direksi', 'Manajer', 'Sekretaris', 'Bendahara', 'Staf']))
+            <p class="nav-section">Master Data</p>
+            
+
+                <a href="{{ route('pegawai.index') }}"
+                   class="nav-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
+                    <i class="bi bi-person-badge"></i> Pegawai
+                </a>
+                <a href="{{ route('rekening.index') }}"
+                   class="nav-link {{ request()->routeIs('rekening.*') ? 'active' : '' }}">
+                    <i class="bi bi-bank"></i> Rekening
+                </a>
+
+                <a href="{{ route('customer.index') }}"
+                   class="nav-link {{ request()->routeIs('customer.*') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i> Customer
+                </a>
+                <a href="{{ route('barang.index') }}"
+                   class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
+                    <i class="bi bi-box-seam"></i> Barang
+                </a>
+
+        @endif
+
+        {{-- ── SECTION TRANSAKSI ── --}}
         <p class="nav-section">Transaksi</p>
-        <a href="{{ route('purchase-order.index') }}"
-           class="nav-link {{ request()->routeIs('purchase-order.*') ? 'active' : '' }}">
-            <i class="bi bi-file-earmark-text"></i> Purchase Order
-        </a>
-        <a href="{{ route('invoice.index') }}"
-           class="nav-link {{ request()->routeIs('invoice.*') ? 'active' : '' }}">
-            <i class="bi bi-receipt"></i> Invoice
-        </a>
-        <!-- <a href="{{ route('detail-invoice.index') }}" class="nav-link"> ... </a> -->
-        <a href="{{ route('surat-jalan.index') }}"
-           class="nav-link {{ request()->routeIs('surat-jalan.*') ? 'active' : '' }}">
-            <i class="bi bi-truck"></i> Surat Jalan
-        </a>
+
+        {{-- Purchase Order & Invoice: Untuk Sekretaris, Bendahara, Staf, Manajer, Direksi --}}
+        @if(in_array($jabatan, ['Sekretaris', 'Bendahara', 'Staf', 'Manajer', 'Direksi']))
+            <a href="{{ route('purchase-order.index') }}"
+               class="nav-link {{ request()->routeIs('purchase-order.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-text"></i> Purchase Order
+            </a>
+            <a href="{{ route('invoice.index') }}"
+               class="nav-link {{ request()->routeIs('invoice.*') ? 'active' : '' }}">
+                <i class="bi bi-receipt"></i> Invoice
+            </a>
+        @endif
+
+        {{-- Surat Jalan: Untuk Pengemudi, Staf, Manajer, Direksi --}}
+        @if(in_array($jabatan, ['Pengemudi', 'Staf', 'Manajer', 'Direksi']))
+            <a href="{{ route('surat-jalan.index') }}"
+               class="nav-link {{ request()->routeIs('surat-jalan.*') ? 'active' : '' }}">
+                <i class="bi bi-truck"></i> Surat Jalan
+            </a>
+        @endif
     </div>
 </nav>
 
@@ -258,7 +263,8 @@
         <div class="topbar-actions">
             <span style="font-size:.8rem; color:var(--text-muted);">
                 <i class="bi bi-person-circle me-1"></i>
-                {{ auth('pegawai')->user()->Nama_Pegawai ?? 'Admin' }}
+                {{ auth('pegawai')->user()->Nama_Pegawai ?? 'Guest' }} 
+                <span class="badge bg-secondary ms-1" style="font-size: .65rem;">{{ $jabatan }}</span>
             </span>
             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                 @csrf
@@ -271,17 +277,8 @@
         </div>
     </header>
 
-    {{-- 
-        ============================================================
-        GAP DIHAPUSKAN: Sebelumnya ada DIV terpisah untuk flash + 
-        <main class="page-content"> yang menyebabkan padding ganda 
-        dan gap tak perlu. Sekarang SEMUA (alert + konten halaman)
-        disatukan dalam SATU wadah utama .page-content.
-        Tidak ada lagi duplikasi atau elemen kosong.
-        ============================================================
-    --}}
     <main class="page-content">
-        {{-- Alert Messages (success, error, validation) akan otomatis hilang setelah 5 detik --}}
+        {{-- Alert Messages --}}
         @if(session('success'))
             <div class="alert alert-success d-flex align-items-center gap-2 alert-dismissible-auto" role="alert">
                 <i class="bi bi-check-circle-fill"></i>
@@ -306,32 +303,23 @@
             </div>
         @endif
 
-        {{-- Dynamic content setiap halaman --}}
+        {{-- Dynamic content --}}
         @yield('content')
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>    
 
 <script>
-    // ─────────────────────────────────────────────────────────────────
-    // FITUR ALERT MUNCUL 5 DETIK LALU MENGHILANG (OTOMATIS)
-    // Semua alert dengan class .alert-dismissible-auto akan dihapus setelah 5 detik
-    // Disertai efek fade-out halus, gap hilang sempurna karena elemen benar2 dihapus dari DOM.
-    // ─────────────────────────────────────────────────────────────────
+    // FITUR ALERT MUNCUL 5 DETIK LALU MENGHILANG
     (function() {
-        // Fungsi untuk menghapus alert dengan transisi
         function dismissAlertWithDelay(alertElement, delayMs = 5000) {
             if (!alertElement) return;
-            // Simpan timer ID untuk menghindari duplikasi jika sudah ada timeout sebelumnya
             if (alertElement._autoDismissTimer) return;
             
             alertElement._autoDismissTimer = setTimeout(() => {
-                // Tambahkan kelas fade-out (biar halus)
                 alertElement.classList.add('alert-fade-out');
-                // Setelah transisi selesai, hapus dari DOM
                 const removeHandler = () => {
                     if (alertElement && alertElement.remove) {
                         alertElement.remove();
@@ -339,7 +327,6 @@
                     alertElement.removeEventListener('transitionend', removeHandler);
                 };
                 alertElement.addEventListener('transitionend', removeHandler, { once: true });
-                // Fallback jika transitionend tidak terpicu (misal tidak ada transition)
                 setTimeout(() => {
                     if (alertElement && alertElement.isConnected) {
                         alertElement.remove();
@@ -348,7 +335,6 @@
             }, delayMs);
         }
 
-        // Jalankan saat DOM siap, dan juga jika ada konten yang di-render setelahnya (mutation observer opsional, tapi untuk halaman standar cukup DOMContentLoaded)
         document.addEventListener('DOMContentLoaded', function() {
             const autoAlerts = document.querySelectorAll('.alert-dismissible-auto');
             autoAlerts.forEach(alert => {
@@ -356,20 +342,13 @@
             });
         });
 
-        // Jika ada alert yang ditambahkan secara dinamis setelah load (misal dari partial atau komponen livewire? 
-        // tapi framework hanya laravel biasa. Tetap aman: gunakan MutationObserver untuk menangkap alert baru 
-        // yang mungkin dihasilkan oleh javascript lain? (tidak wajib tapi sangat clean untuk jaga-jaga)
-        // Ini membuat setiap alert dengan class .alert-dismissible-auto otomatis hilang meskipun ditambahkan setelah halaman siap.
-        // Pastikan tidak double timers.
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === 1) { // element node
-                        // Jika node itu sendiri memiliki class alert-dismissible-auto
+                    if (node.nodeType === 1) {
                         if (node.classList && node.classList.contains('alert-dismissible-auto')) {
                             if (!node._autoDismissTimer) dismissAlertWithDelay(node, 5000);
                         }
-                        // Cari di dalam node yang ditambahkan jika ada alert di dalamnya
                         if (node.querySelectorAll) {
                             const innerAlerts = node.querySelectorAll('.alert-dismissible-auto');
                             innerAlerts.forEach(alert => {
@@ -384,8 +363,6 @@
     })();
 </script>
 
-
 @stack('scripts')
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </html>

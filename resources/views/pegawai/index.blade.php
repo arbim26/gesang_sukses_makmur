@@ -2,6 +2,10 @@
 @section('title', 'Pegawai')
 @section('page-title', 'Manajemen Pegawai')
 
+@php
+    $jabatanAktif = auth('pegawai')->user()->Jabatan;
+@endphp
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <p class="text-muted mb-0" style="font-size:.85rem;">
@@ -20,7 +24,9 @@
                     <th>ID Pegawai</th>
                     <th>Nama Pegawai</th>
                     <th>Jabatan</th>
+                    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                     <th style="width:160px;">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -30,13 +36,10 @@
                     <td>{{ $p->Nama_Pegawai }}</td>
                     <td>
                         @php
-                            // Menyesuaikan array warna badge dengan nama-nama jabatan baru yang formal
                             $colors = [
-                                'Staf IT'    => 'background:#fee2e2;color:#dc2626;',
-                                'Direksi'    => 'background:#fef3c7;color:#d97706;', // Diubah ke Direksi
+                                'Direksi'    => 'background:#fef3c7;color:#d97706;', 
                                 'Manajer'    => 'background:#fae8ff;color:#a21caf;',
                                 'Sekretaris' => 'background:#eef2ff;color:#4f46e5;',
-                                'Bendahara'  => 'background:#e0f2fe;color:#0369a1;',
                                 'Staf'       => 'background:#f3f4f6;color:#374151;',
                                 'Pengemudi'  => 'background:#ecfdf5;color:#059669;',
                             ];
@@ -45,13 +48,12 @@
                             {{ $p->Jabatan }}
                         </span>
                     </td>
+                    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                     <td>
                         <a href="{{ route('pegawai.edit', $p->Id_Pegawai) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>
                         </a>
-            
-                        {{-- Proteksi Lapisan View: Jangan tampilkan tombol hapus jika ID Pegawai sama dengan user yang login --}}
                         @if(auth()->check() && auth()->user()->Id_Pegawai === $p->Id_Pegawai)
                             <span class="badge bg-light text-muted small" style="padding: 5px 10px; border: 1px solid var(--border);">
                                 <i class="bi bi-person-fill-lock me-1"></i> Anda
@@ -67,6 +69,7 @@
                             </form>
                         @endif
                     </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>
