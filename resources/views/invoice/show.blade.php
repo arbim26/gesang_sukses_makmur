@@ -12,12 +12,7 @@
         <i class="bi bi-arrow-left me-1"></i> Kembali ke daftar
     </a>
     <div class="d-flex gap-2">
-        @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
-        <a href="{{ route('invoice.edit', $invoice->No_Invoice) }}" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-pencil me-1"></i> Edit
-        </a>
-        @endif
-        <a href="{{ route('invoice.print', $invoice->No_Invoice) }}" class="btn btn-sm btn-outline-secondary">
+        <a href="{{ route('invoice.print', encode_id($invoice->No_Invoice)) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-printer me-1"></i> Cetak
         </a>
     </div>
@@ -131,7 +126,6 @@
             </div>
         </div>
 
-        {{-- Surat Jalan terkait --}}
         <div class="card">
             <div class="card-header">
                 <span><i class="bi bi-truck me-1"></i>Surat Jalan</span>
@@ -145,7 +139,7 @@
                 @if($invoice->purchaseOrder->suratJalan)
                 @php $sj = $invoice->purchaseOrder->suratJalan @endphp
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('surat-jalan.show', $sj->No_SJ) }}"
+                    <a href="{{ route('surat-jalan.show', encode_id($sj->No_SJ)) }}"
                        style="color:var(--accent);text-decoration:none;font-weight:500;">
                         {{ $sj->No_SJ }}
                     </a>

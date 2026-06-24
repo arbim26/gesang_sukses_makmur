@@ -9,7 +9,7 @@
     </a>
 </div>
 
-<form action="{{ isset($invoice) ? route('invoice.update', $invoice->No_Invoice) : route('invoice.store') }}"
+<form action="{{ isset($invoice) ? route('invoice.update',  encode_id($invoice->No_Invoice)) : route('invoice.store') }}"
       method="POST">
     @csrf
     @if(isset($invoice)) @method('PUT') @endif

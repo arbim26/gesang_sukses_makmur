@@ -119,12 +119,11 @@ class InvoiceController extends Controller
             'No_PO'          => 'required|exists:purchase_orders,No_PO',
             'tanggal_terbit' => 'required|date',
             'discount'       => 'nullable|numeric|min:0|max:100',
-            'Id_CEO'         => 'required|exists:pegawais,Id_Pegawai', // ID Kolom database tetap Id_CEO
+            'Id_CEO'         => 'required|exists:pegawais,Id_Pegawai', 
             'Id_Sekretaris'  => 'required|exists:pegawais,Id_Pegawai',
             'Acc_No'         => 'required|exists:rekenings,Acc_No',
         ]);
 
-        // Pastikan PO belum punya invoice lain
         if (Invoice::where('No_PO', $request->No_PO)->exists()) {
             return back()->withInput()
                 ->withErrors(['No_PO' => 'Purchase Order ini sudah memiliki Invoice.']);
@@ -140,11 +139,10 @@ class InvoiceController extends Controller
             'Acc_No'         => $request->Acc_No,
         ]);
 
-        return redirect()->route('invoice.index')
-            ->with('success', 'Invoice berhasil dibuat.');
+        return redirect()->route('invoice.index')->with('success', 'Invoice berhasil dibuat.');
     }
 
-    public function show(string $id)
+    public function show(string $hash)
     {
         $invoice = Invoice::with([
             'purchaseOrder.customer',
@@ -152,9 +150,8 @@ class InvoiceController extends Controller
             'ceo',
             'sekretaris',
             'rekening',
-        ])->findOrFail($id);
+        ])->findOrFail(decode_id($hash));
 
-        // Hitung nilai invoice dari PO (dengan diskon)
         $subTotal   = $invoice->purchaseOrder->Sub_Total;
         $ppn        = $invoice->purchaseOrder->PPN;
         $diskon     = $invoice->discount;
@@ -164,15 +161,15 @@ class InvoiceController extends Controller
         return view('invoice.show', compact('invoice', 'subTotal', 'ppn', 'diskon', 'afterDisc', 'grandTotal'));
     }
 
-    public function edit(string $id)
+    public function edit(string $hash)
     {
-        $invoice = Invoice::findOrFail($id);
+        $invoice = Invoice::findOrFail(decode_id($hash));
         return view('invoice.form', array_merge(compact('invoice'), $this->formData($invoice->No_PO)));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $hash)
     {
-        $invoice = Invoice::findOrFail($id);
+        $invoice = Invoice::findOrFail(decode_id($hash));
 
         $request->validate([
             'tanggal_terbit' => 'required|date',
@@ -182,7 +179,6 @@ class InvoiceController extends Controller
             'Acc_No'         => 'required|exists:rekenings,Acc_No',
         ]);
 
-        // No_PO tidak boleh diubah setelah Invoice dibuat
         $invoice->update([
             'tanggal_terbit' => $request->tanggal_terbit,
             'discount'       => $request->discount ?? 0,
@@ -191,27 +187,18 @@ class InvoiceController extends Controller
             'Acc_No'         => $request->Acc_No,
         ]);
 
-        return redirect()->route('invoice.show', $invoice->No_Invoice)
-            ->with('success', 'Invoice berhasil diperbarui.');
+        return redirect()->route('invoice.show', $hash)->with('success', 'Invoice berhasil diperbarui.');
     }
 
-    public function destroy(string $id)
+    public function destroy(string $hash)
     {
-        $invoice = Invoice::findOrFail($id);
-
-        // Cek apakah PO sudah punya Surat Jalan
-        if ($invoice->purchaseOrder->suratJalan()->exists()) {
-            return redirect()->route('invoice.index')
-                ->with('error', 'Invoice tidak dapat dihapus karena Purchase Order-nya sudah memiliki Surat Jalan.');
-        }
-
-        $invoice->delete();
+        Invoice::findOrFail(decode_id($hash))->delete();
 
         return redirect()->route('invoice.index')
             ->with('success', 'Invoice berhasil dihapus.');
     }
 
-    public function print(string $id)
+    public function print(string $hash)
     {
         $invoice = Invoice::with([
             'purchaseOrder.customer',
@@ -219,7 +206,7 @@ class InvoiceController extends Controller
             'ceo',
             'sekretaris',
             'rekening',
-        ])->findOrFail($id);
+        ])->findOrFail(decode_id($hash));
 
         $subTotal   = $invoice->purchaseOrder->Sub_Total;
         $ppn        = $invoice->purchaseOrder->PPN;
@@ -230,7 +217,6 @@ class InvoiceController extends Controller
         return view('invoice.invoice_print', compact('invoice', 'subTotal', 'ppn', 'diskon', 'afterDisc', 'grandTotal'));
     }
 
-    // ── Helper ────────────────────────────────────────────────
     private function formData(?string $currentNoPO = null): array
     {
         $poQuery = PurchaseOrder::with(['customer', 'details.barang'])
@@ -242,7 +228,7 @@ class InvoiceController extends Controller
 
         return [
             'purchaseOrders'    => $poQuery->latest('PO_Date')->get(),
-            // Perubahan: Mencari pegawai yang memiliki Jabatan 'Direksi' sesuai data migration baru
+ 
             'petugasDireksi'    => Pegawai::where('Jabatan', 'Direksi')->orderBy('Nama_Pegawai')->get(),
             'petugasSekretaris' => Pegawai::where('Jabatan', 'Sekretaris')->orderBy('Nama_Pegawai')->get(),
             'rekenings'         => Rekening::orderBy('Bank')->get(),

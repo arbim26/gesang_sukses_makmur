@@ -21,7 +21,8 @@ class SuratJalanController extends Controller
 
     public function create()
     {
-        return view('surat-jalan.form', $this->formData());
+        $petugasSupir = Pegawai::where('Jabatan', 'Pengemudi')->get();
+        return view('surat-jalan.form',compact('petugasSupir'), $this->formData());
     }
 
     public function store(Request $request)
@@ -78,8 +79,8 @@ class SuratJalanController extends Controller
             'Keterangan' => 'nullable|string',
         ]);
     
-        SuratJalan::findOrFail(decode_id($hash))->update(
-            $request->only('Tanggal', 'Id_Supir', 'Keterangan')
+        SuratJalan::findOrFail(decode_id($hash))->update( 
+        $request->only('Tanggal', 'Id_Supir', 'Keterangan')
         );
     
         return redirect()->route('surat-jalan.show', $hash)

@@ -35,6 +35,10 @@ class Invoice extends Model
         return $this->belongsTo(Pegawai::class, 'Id_Sekretaris', 'Id_Pegawai');
     }
 
+    public function No_SJ() {
+        return $this->hasMany(SuratJalan::class, 'No_PO', 'No_PO'); 
+    }
+
     // Shortcut ke customer melalui PO
     public function customer()
     {

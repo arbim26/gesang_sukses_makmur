@@ -8,18 +8,6 @@
 
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <p class="text-muted mb-0" style="font-size:.85rem;">
-            Total <strong>{{ $invoices->total() }}</strong> invoice
-        </p>
-        @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
-        <a href="{{ route('invoice.create') }}" class="btn btn-accent">
-            <i class="bi bi-plus-lg me-1"></i> Buat Invoice
-        </a>
-        @endif
-    </div>
-
-
      <form method="GET" action="{{ route('invoice.index') }}" id="filterForm">
         <input type="hidden" name="sort" value="{{ request('sort', 'tanggal_terbit') }}">
         <input type="hidden" name="dir"  value="{{ request('dir', 'desc') }}">
@@ -42,19 +30,6 @@
                         </div>
                     </div>
     
-                    {{-- Filter: Surat Jalan --}}
-                    <div class="col-md-2">
-                        <label class="form-label text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;">
-                            Surat Jalan
-                        </label>
-                        <select name="surat_jalan" class="form-select form-select-sm" style="border-color:var(--border);">
-                            <option value="">Semua</option>
-                            <option value="ada"   {{ request('surat_jalan') === 'ada'   ? 'selected' : '' }}>Sudah Ada</option>
-                            <option value="belum" {{ request('surat_jalan') === 'belum' ? 'selected' : '' }}>Belum Ada</option>
-                        </select>
-                    </div>
-    
-                    {{-- Filter: Dari Tanggal --}}
                     <div class="col-md-2">
                         <label class="form-label text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;">
                             Dari Tanggal
@@ -64,7 +39,6 @@
                                style="border-color:var(--border);">
                     </div>
     
-                    {{-- Filter: Sampai Tanggal --}}
                     <div class="col-md-2">
                         <label class="form-label text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;">
                             Sampai Tanggal
@@ -90,7 +64,6 @@
                                style="border-color:var(--border);">
                     </div>
     
-                    {{-- Tombol aksi --}}
                     <div class="col-md-1 d-flex gap-1">
                         <button type="submit" class="btn btn-sm btn-accent w-100" title="Terapkan Filter">
                             <i class="bi bi-funnel-fill"></i>
@@ -195,7 +168,6 @@
                                     Grand Total {!! sortIcon('grand_total') !!}
                                 </a>
                             </th>
-                            <th class="text-center">Surat Jalan</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -203,16 +175,16 @@
                         @forelse($invoices as $inv)
                         <tr>
                             <td>
-                                <a href="{{ route('invoice.show', $inv->No_Invoice) }}"
+                                <a href="{{ route('invoice.show', encode_id($inv->No_Invoice)) }}"
                                    style="color:var(--accent);text-decoration:none;font-weight:500;">
-                                    {{ $inv->No_Invoice }}
+                                {{ $inv->No_Invoice }}
                                 </a>
                             </td>
                             <td style="color:var(--text-muted);">
                                 {{ \Carbon\Carbon::parse($inv->tanggal_terbit)->format('d M Y') }}
                             </td>
                             <td>
-                                <a href="{{ route('purchase-order.show', $inv->No_PO) }}"
+                                <a href="{{ route('purchase-order.show', encode_id($inv->No_Invoice)) }}"
                                    style="color:var(--text-secondary,#6b7280);text-decoration:none;font-size:.8rem;">
                                     {{ $inv->No_PO }}
                                 </a>
@@ -225,7 +197,6 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                {{-- Sub-total & diskon sebagai tooltip kecil --}}
                                 @if($inv->computed_diskon > 0)
                                 <span style="font-size:.7rem;color:var(--text-muted);display:block;">
                                     Sub: Rp {{ number_format($inv->computed_sub_total, 0, ',', '.') }}
@@ -240,24 +211,28 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                @if($inv->purchaseOrder?->suratJalan)
-                                    <span class="badge-pill"
-                                          style="background:#d1fae5;color:#065f46;font-size:.7rem;padding:.2rem .5rem;border-radius:999px;">
-                                        <i class="bi bi-check-lg me-1"></i>{{ $inv->purchaseOrder->suratJalan->No_SJ }}
-                                    </span>
-                                @else
-                                    <span class="badge-pill"
-                                          style="background:#fef3c7;color:#92400e;font-size:.7rem;padding:.2rem .5rem;border-radius:999px;">
-                                        <i class="bi bi-clock me-1"></i>Belum Ada
-                                    </span>
-                                @endif
+                                <a href="{{ route('invoice.show', encode_id($inv->No_Invoice)) }}"
+                                    class="btn btn-sm btn-outline-primary me-1">
+                                     <i class="bi bi-eye"></i>
+                                 </a>
+                                 @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
+                                    @if(!$inv->No_SJ->count())
+                                        <a href="{{ route('invoice.edit', encode_id($inv->No_Invoice)) }}"
+                                            class="btn btn-sm btn-outline-secondary me-1">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="{{ route('invoice.destroy', encode_id($inv->No_Invoice)) }}"
+                                            method="POST" class="d-inline"
+                                            onsubmit="return confirm('Hapus invoice ini?')">
+                                            @csrf @method('DELETE')
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                 @endif
                             </td>
-                            <td class="text-center">
-                                <a href="{{ route('invoice.show', $inv->No_Invoice) }}"
-                                   class="btn btn-sm" style="border:1px solid var(--border);font-size:.7rem;padding:.2rem .5rem;">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </td>
+                            
                         </tr>
                         @empty
                         <tr>

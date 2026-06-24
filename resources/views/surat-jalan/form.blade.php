@@ -64,7 +64,6 @@
                         <label class="form-label">Supir <span class="text-danger">*</span></label>
                         <select name="Id_Supir" class="form-select @error('Id_Supir') is-invalid @enderror" required>
                             <option value="">— Pilih Supir —</option>
-                            
                             @foreach($petugasSupir as $p)
                                 <option value="{{ $p->Id_Pegawai }}"
                                     {{ old('Id_Supir', $suratJalans->Id_Supir ?? '') == $p->Id_Pegawai ? 'selected' : '' }}>

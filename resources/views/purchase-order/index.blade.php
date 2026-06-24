@@ -101,7 +101,6 @@
 
             </div>
 
-            {{-- Active filter badges --}}
             @php
                 $labelMap = [
                     'search'          => 'Cari',
@@ -130,9 +129,6 @@
     </div>
 </form>
 
-{{-- ════════════════════════════════════════════════
-     HEADER & TABEL
-     ════════════════════════════════════════════════ --}}
 
 @php
     function sortUrlPO(string $col): string {
