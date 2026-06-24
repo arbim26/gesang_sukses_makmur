@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Pendaftaran alias middleware 'jabatan' yang benar di sini:
+        $middleware->alias([
+            'jabatan' => \App\Http\Middleware\CheckJabatan::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

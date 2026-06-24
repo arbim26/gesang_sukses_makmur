@@ -2,14 +2,20 @@
 @section('title', 'Customer')
 @section('page-title', 'Manajemen Customer')
 
+@php
+    $jabatanAktif = auth('pegawai')->user()->Jabatan;
+@endphp
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <p class="text-muted mb-0" style="font-size:.85rem;">
         Total <strong>{{ $customers->total() }}</strong> customer terdaftar
     </p>
+    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
     <a href="{{ route('customer.create') }}" class="btn btn-accent">
         <i class="bi bi-plus-lg me-1"></i> Tambah Customer
     </a>
+    @endif
 </div>
 
 <div class="card">
@@ -20,7 +26,9 @@
                     <th>ID Customer</th>
                     <th>Nama Perusahaan</th>
                     <th>PIC</th>
+                    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                     <th style="width:130px;">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -29,11 +37,8 @@
                     <td><code style="font-size:.8rem;">{{ $c->Id_Cust }}</code></td>
                     <td>{{ $c->Nama }}</td>
                     <td>{{ $c->PIC }}</td>
+                    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                     <td>
-                        {{-- <a href="{{ route('customer.show', $c->Id_Cust) }}"
-                           class="btn btn-sm btn-outline-primary me-1">
-                            <i class="bi bi-eye"></i>
-                        </a> --}}
                         <a href="{{ route('customer.edit', $c->Id_Cust) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>
@@ -47,6 +52,7 @@
                             </button>
                         </form>
                     </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>

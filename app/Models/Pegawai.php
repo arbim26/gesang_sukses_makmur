@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Pegawai extends Authenticatable
@@ -21,6 +22,18 @@ class Pegawai extends Authenticatable
     {
         return [
             'password' => 'hashed',
+        ];
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'jabatan' => $this->Jabatan, // Menyimpan nilai seperti 'Direksi', 'Manajer', dll.
         ];
     }
 

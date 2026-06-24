@@ -2,6 +2,11 @@
 @section('title', 'Invoice')
 @section('page-title', 'Manajemen Invoice')
 
+@php
+    $jabatanAktif = auth('pegawai')->user()->Jabatan;
+@endphp
+
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <p class="text-muted mb-0" style="font-size:.85rem;">
@@ -61,6 +66,7 @@
                            class="btn btn-sm btn-outline-primary me-1">
                             <i class="bi bi-eye"></i>
                         </a>
+                        @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                         <a href="{{ route('invoice.edit', $inv->No_Invoice) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>
@@ -73,6 +79,7 @@
                                 <i class="bi bi-trash3"></i>
                             </button>
                         </form>
+                        @endif
                     </td>
                 </tr>
                 @empty

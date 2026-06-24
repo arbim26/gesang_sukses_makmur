@@ -2,6 +2,10 @@
 @section('title', 'Rekening')
 @section('page-title', 'Manajemen Rekening')
 
+@php
+    $jabatanAktif = auth('pegawai')->user()->Jabatan;
+@endphp
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <p class="text-muted mb-0" style="font-size:.85rem;">
@@ -20,7 +24,9 @@
                     <th>No. Rekening</th>
                     <th>Bank</th>
                     <th>Atas Nama</th>
+                    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                     <th style="width:160px;">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -33,11 +39,8 @@
                         </span>
                     </td>
                     <td>{{ $r->Nama }}</td>
+                    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                     <td>
-                        <a href="{{ route('rekening.show', $r->Acc_No) }}"
-                           class="btn btn-sm btn-outline-primary me-1">
-                            <i class="bi bi-eye"></i>
-                        </a>
                         <a href="{{ route('rekening.edit', $r->Acc_No) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>
@@ -51,6 +54,7 @@
                             </button>
                         </form>
                     </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>
