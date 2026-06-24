@@ -2,6 +2,11 @@
 @section('title', 'Purchase Order')
 @section('page-title', 'Manajemen Purchase Order')
 
+@php
+    $jabatanAktif = auth('pegawai')->user()->Jabatan;
+@endphp
+
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <p class="text-muted mb-0" style="font-size:.85rem;">
@@ -55,6 +60,26 @@
                            class="btn btn-sm btn-outline-primary me-1">
                             <i class="bi bi-eye"></i>
                         </a>
+<<<<<<< HEAD
+=======
+
+                        @if($po->attachment)
+                            @php
+                                $ext = strtolower(pathinfo($po->attachment, PATHINFO_EXTENSION));
+                                $fileUrl = asset('storage/' . $po->attachment);
+                                $safeNoPo = str_replace(['/', '\\'], '-', $po->No_PO ?? 'Dokumen');
+                                $fileName = $safeNoPo . '.' . $ext; 
+                            @endphp
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-secondary me-1 mb-1"
+                                    title="Preview Dokumen"
+                                    onclick="openCustomPreview('{{ $fileUrl }}', '{{ $fileName }}')">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </button>
+                        @endif
+
+                        @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
+>>>>>>> f51e716 (add JWT and Multi Role)
                         @if(!$po->invoices->count())
                         <a href="{{ route('purchase-order.edit', $po->No_PO) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
@@ -68,6 +93,7 @@
                                 <i class="bi bi-trash3"></i>
                             </button>
                         </form>
+                        @endif
                         @endif
                     </td>
                 </tr>

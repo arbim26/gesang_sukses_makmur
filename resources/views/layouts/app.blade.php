@@ -106,7 +106,13 @@
             color: var(--brand);
         }
         .topbar-actions { display: flex; gap: 8px; align-items: center; }
-        .page-content { padding: 1.75rem; flex: 1; }
+        
+        .page-content {
+            padding: 1.75rem;
+            flex: 1;
+            background: var(--surface);
+        }
+        
         /* ── Cards ── */
         .card {
             border: 1px solid var(--border);
@@ -148,13 +154,6 @@
         }
         .btn-accent:hover { background: #4338ca; color: #fff; }
         .btn-sm { font-size: .75rem; padding: .3rem .7rem; border-radius: 6px; }
-        /* ── Badge status ── */
-        .badge-pill {
-            font-size: .7rem;
-            font-weight: 500;
-            padding: .3em .75em;
-            border-radius: 999px;
-        }
         /* ── Form ── */
         .form-label { font-size: .8rem; font-weight: 500; color: var(--brand); margin-bottom: .3rem; }
         .form-control, .form-select {
@@ -167,9 +166,19 @@
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(79,70,229,.12);
         }
-        /* ── Alert ── */
-        .alert { border-radius: 10px; font-size: .875rem; border: none; }
-        /* ── Responsive ── */
+        /* ── Alert styling ── */
+        .alert {
+            border-radius: 10px;
+            font-size: .875rem;
+            border: none;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: opacity 0.25s ease;
+        }
+        .alert-fade-out {
+            opacity: 0 !important;
+            transition: opacity 0.25s ease !important;
+        }
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .main-wrap { margin-left: 0; }
@@ -178,7 +187,7 @@
 </head>
 <body>
 
-{{-- ──── SIDEBAR ──────────────────────────────── --}}
+{{-- ──── SIDEBAR DENGAN FILTRASI JABATAN (ROLE) ──────────────────────────────── --}}
 <nav class="sidebar">
     <div class="sidebar-brand">
         <span>InvoiceApp</span>
@@ -192,41 +201,57 @@
             <i class="bi bi-speedometer2"></i> Dashboard
         </a>
 
-        <p class="nav-section">Master Data</p>
-        <a href="{{ route('pegawai.index') }}"
-           class="nav-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
-            <i class="bi bi-person-badge"></i> Pegawai
-        </a>
-        <a href="{{ route('customer.index') }}"
-           class="nav-link {{ request()->routeIs('customer.*') ? 'active' : '' }}">
-            <i class="bi bi-people"></i> Customer
-        </a>
-        <a href="{{ route('barang.index') }}"
-           class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
-            <i class="bi bi-box-seam"></i> Barang
-        </a>
-        <a href="{{ route('rekening.index') }}"
-           class="nav-link {{ request()->routeIs('rekening.*') ? 'active' : '' }}">
-            <i class="bi bi-bank"></i> Rekening
-        </a>
+        @php
+            $jabatan = auth('pegawai')->user()->Jabatan ?? '';
+        @endphp
 
+        
+        @if(in_array($jabatan, ['Staf IT', 'Direksi', 'Manajer', 'Sekretaris', 'Bendahara', 'Staf']))
+            <p class="nav-section">Master Data</p>
+            
+
+                <a href="{{ route('pegawai.index') }}"
+                   class="nav-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
+                    <i class="bi bi-person-badge"></i> Pegawai
+                </a>
+                <a href="{{ route('rekening.index') }}"
+                   class="nav-link {{ request()->routeIs('rekening.*') ? 'active' : '' }}">
+                    <i class="bi bi-bank"></i> Rekening
+                </a>
+
+                <a href="{{ route('customer.index') }}"
+                   class="nav-link {{ request()->routeIs('customer.*') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i> Customer
+                </a>
+                <a href="{{ route('barang.index') }}"
+                   class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
+                    <i class="bi bi-box-seam"></i> Barang
+                </a>
+
+        @endif
+
+        {{-- ── SECTION TRANSAKSI ── --}}
         <p class="nav-section">Transaksi</p>
-        <a href="{{ route('purchase-order.index') }}"
-           class="nav-link {{ request()->routeIs('purchase-order.*') ? 'active' : '' }}">
-            <i class="bi bi-file-earmark-text"></i> Purchase Order
-        </a>
-        <a href="{{ route('invoice.index') }}"
-           class="nav-link {{ request()->routeIs('invoice.*') ? 'active' : '' }}">
-            <i class="bi bi-receipt"></i> Invoice
-        </a>
-        <!-- <a href="{{ route('detail-invoice.index') }}"
-           class="nav-link {{ request()->routeIs('detail-invoice.*') ? 'active' : '' }}">
-            <i class="bi bi-list-check"></i> Detail Invoice
-        </a> -->
-        <a href="{{ route('surat-jalan.index') }}"
-           class="nav-link {{ request()->routeIs('surat-jalan.*') ? 'active' : '' }}">
-            <i class="bi bi-truck"></i> Surat Jalan
-        </a>
+
+        {{-- Purchase Order & Invoice: Untuk Sekretaris, Bendahara, Staf, Manajer, Direksi --}}
+        @if(in_array($jabatan, ['Sekretaris', 'Bendahara', 'Staf', 'Manajer', 'Direksi']))
+            <a href="{{ route('purchase-order.index') }}"
+               class="nav-link {{ request()->routeIs('purchase-order.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-text"></i> Purchase Order
+            </a>
+            <a href="{{ route('invoice.index') }}"
+               class="nav-link {{ request()->routeIs('invoice.*') ? 'active' : '' }}">
+                <i class="bi bi-receipt"></i> Invoice
+            </a>
+        @endif
+
+        {{-- Surat Jalan: Untuk Pengemudi, Staf, Manajer, Direksi --}}
+        @if(in_array($jabatan, ['Pengemudi', 'Staf', 'Manajer', 'Direksi']))
+            <a href="{{ route('surat-jalan.index') }}"
+               class="nav-link {{ request()->routeIs('surat-jalan.*') ? 'active' : '' }}">
+                <i class="bi bi-truck"></i> Surat Jalan
+            </a>
+        @endif
     </div>
 </nav>
 
@@ -238,7 +263,8 @@
         <div class="topbar-actions">
             <span style="font-size:.8rem; color:var(--text-muted);">
                 <i class="bi bi-person-circle me-1"></i>
-                {{ auth('pegawai')->user()->Nama_Pegawai ?? 'Admin' }}
+                {{ auth('pegawai')->user()->Nama_Pegawai ?? 'Guest' }} 
+                <span class="badge bg-secondary ms-1" style="font-size: .65rem;">{{ $jabatan }}</span>
             </span>
             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                 @csrf
@@ -251,8 +277,8 @@
         </div>
     </header>
 
-    {{-- Flash Messages --}}
-    <div class="page-content pb-0">
+    <main class="page-content">
+        {{-- Alert Messages --}}
         @if(session('success'))
             <div class="alert alert-success d-flex align-items-center gap-2">
                 <i class="bi bi-check-circle-fill"></i>
@@ -276,14 +302,66 @@
         @endif
     </div>
 
-    {{-- Page Content --}}
-    <main class="page-content">
+        {{-- Dynamic content --}}
         @yield('content')
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+<script>
+    // FITUR ALERT MUNCUL 5 DETIK LALU MENGHILANG
+    (function() {
+        function dismissAlertWithDelay(alertElement, delayMs = 5000) {
+            if (!alertElement) return;
+            if (alertElement._autoDismissTimer) return;
+            
+            alertElement._autoDismissTimer = setTimeout(() => {
+                alertElement.classList.add('alert-fade-out');
+                const removeHandler = () => {
+                    if (alertElement && alertElement.remove) {
+                        alertElement.remove();
+                    }
+                    alertElement.removeEventListener('transitionend', removeHandler);
+                };
+                alertElement.addEventListener('transitionend', removeHandler, { once: true });
+                setTimeout(() => {
+                    if (alertElement && alertElement.isConnected) {
+                        alertElement.remove();
+                    }
+                }, 300);
+            }, delayMs);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const autoAlerts = document.querySelectorAll('.alert-dismissible-auto');
+            autoAlerts.forEach(alert => {
+                dismissAlertWithDelay(alert, 5000);
+            });
+        });
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) {
+                        if (node.classList && node.classList.contains('alert-dismissible-auto')) {
+                            if (!node._autoDismissTimer) dismissAlertWithDelay(node, 5000);
+                        }
+                        if (node.querySelectorAll) {
+                            const innerAlerts = node.querySelectorAll('.alert-dismissible-auto');
+                            innerAlerts.forEach(alert => {
+                                if (!alert._autoDismissTimer) dismissAlertWithDelay(alert, 5000);
+                            });
+                        }
+                    }
+                });
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    })();
+</script>
+
 @stack('scripts')
 </body>
 </html>
