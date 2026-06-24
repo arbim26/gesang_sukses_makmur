@@ -48,7 +48,7 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('invoice/{invoice}/print', [InvoiceController::class, 'print'])->name('invoice.print');
     });
 
-    Route::middleware(['jabatan:Direksi,Pengemudi,Staf,Manajer'])->group(function () {
+    Route::middleware(['jabatan:Direksi,Pengemudi,Sekretaris,Manajer'])->group(function () {
         Route::resource('surat-jalan', SuratJalanController::class);
         Route::get('surat-jalan/{suratJalan}/print', [SuratJalanController::class, 'print'])->name('surat-jalan.print');
     });

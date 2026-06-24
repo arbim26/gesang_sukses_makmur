@@ -15,7 +15,7 @@
                 <span>{{ isset($suratJalan) ? 'Edit Surat Jalan' : 'Formulir Surat Jalan Baru' }}</span>
             </div>
             <div class="card-body p-4">
-                <form action="{{ isset($suratJalan) ? route('surat-jalan.update', $suratJalan->No_SJ) : route('surat-jalan.store') }}"
+<form action="{{ isset($suratJalan) ? route('surat-jalan.update', encode_id($suratJalan->No_SJ)) : route('surat-jalan.store') }}"
                       method="POST">
                     @csrf
                     @if(isset($suratJalan)) @method('PUT') @endif
@@ -64,9 +64,10 @@
                         <label class="form-label">Supir <span class="text-danger">*</span></label>
                         <select name="Id_Supir" class="form-select @error('Id_Supir') is-invalid @enderror" required>
                             <option value="">— Pilih Supir —</option>
+                            
                             @foreach($petugasSupir as $p)
                                 <option value="{{ $p->Id_Pegawai }}"
-                                    {{ old('Id_Supir', $suratJalan->Id_Supir ?? '') == $p->Id_Pegawai ? 'selected' : '' }}>
+                                    {{ old('Id_Supir', $suratJalans->Id_Supir ?? '') == $p->Id_Pegawai ? 'selected' : '' }}>
                                     {{ $p->Nama_Pegawai }} ({{ $p->Id_Pegawai }})
                                 </option>
                             @endforeach

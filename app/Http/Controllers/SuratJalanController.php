@@ -34,14 +34,12 @@ class SuratJalanController extends Controller
             'Keterangan' => 'nullable|string',
         ]);
 
-        // PO harus sudah punya Invoice sebelum Surat Jalan dibuat
+
         $po = PurchaseOrder::withCount('invoices')->findOrFail($request->No_PO);
         if ($po->invoices_count === 0) {
-            return back()->withInput()
-                ->withErrors(['No_PO' => 'Purchase Order ini belum memiliki Invoice. Buat Invoice terlebih dahulu.']);
+            return back()->withInput()->withErrors(['No_PO' => 'Purchase Order ini belum memiliki Invoice. Buat Invoice terlebih dahulu.']);
         }
 
-        // Satu PO hanya boleh punya satu Surat Jalan
         if (SuratJalan::where('No_PO', $request->No_PO)->exists()) {
             return back()->withInput()
                 ->withErrors(['No_PO' => 'Surat Jalan untuk Purchase Order ini sudah pernah dibuat.']);
@@ -49,71 +47,67 @@ class SuratJalanController extends Controller
 
         SuratJalan::create($request->only('No_SJ', 'No_PO', 'Tanggal', 'Id_Supir', 'Keterangan'));
 
-        return redirect()->route('surat-jalan.index')
-            ->with('success', 'Surat Jalan berhasil dibuat.');
+        return redirect()->route('surat-jalan.index')->with('success', 'Surat Jalan berhasil dibuat.');
     }
 
-    public function show(string $id)
+    public function show(string $hash)
     {
         $suratJalan = SuratJalan::with([
             'purchaseOrder.customer',
             'purchaseOrder.details.barang',
             'purchaseOrder.invoices.rekening',
             'supir',
-        ])->findOrFail($id);
-
+        ])->findOrFail(decode_id($hash));
+    
         return view('surat-jalan.show', compact('suratJalan'));
     }
-
-    public function edit(string $id)
+    
+    public function edit(string $hash)
     {
-        $suratJalan = SuratJalan::findOrFail($id);
-        return view('surat-jalan.form', array_merge(
-            compact('suratJalan'),
-            $this->formData($suratJalan->No_PO)
-        ));
+        $suratJalan = SuratJalan::findOrFail(decode_id($hash));
+        $petugasSupir = Pegawai::where('Jabatan', 'Pengemudi')->get(); 
+    
+        return view('surat-jalan.form', array_merge(compact('suratJalan', 'petugasSupir'),$this->formData($suratJalan->No_PO)));
     }
-
-    public function update(Request $request, string $id)
+    
+    public function update(Request $request, string $hash)
     {
         $request->validate([
             'Tanggal'    => 'required|date',
             'Id_Supir'   => 'required|exists:pegawais,Id_Pegawai',
             'Keterangan' => 'nullable|string',
         ]);
-
-        // No_PO tidak boleh diubah setelah SJ dibuat
-        SuratJalan::findOrFail($id)->update(
+    
+        SuratJalan::findOrFail(decode_id($hash))->update(
             $request->only('Tanggal', 'Id_Supir', 'Keterangan')
         );
-
-        return redirect()->route('surat-jalan.show', $id)
+    
+        return redirect()->route('surat-jalan.show', $hash)
             ->with('success', 'Surat Jalan berhasil diperbarui.');
     }
-
-    public function destroy(string $id)
+    
+    public function destroy(string $hash)
     {
-        SuratJalan::findOrFail($id)->delete();
-
+        SuratJalan::findOrFail(decode_id($hash))->delete();
+    
         return redirect()->route('surat-jalan.index')
             ->with('success', 'Surat Jalan berhasil dihapus.');
     }
-
-    public function print(string $id)
+    
+    public function print(string $hash)
     {
         $suratJalan = SuratJalan::with([
             'purchaseOrder.customer',
             'purchaseOrder.details.barang',
             'supir',
-        ])->findOrFail($id);
-
+        ])->findOrFail(decode_id($hash));
+    
         return view('surat-jalan.surat_jalan_print', compact('suratJalan'));
     }
 
     // ── Helper ─────────────────────────────────────────────────
     private function formData(?string $currentNoPO = null): array
     {
-        // Hanya PO yang sudah punya Invoice dan belum punya SJ
         $poQuery = PurchaseOrder::with('customer')
             ->whereHas('invoices')
             ->whereDoesntHave('suratJalan');
@@ -124,7 +118,7 @@ class SuratJalanController extends Controller
 
         return [
             'purchaseOrders' => $poQuery->latest('PO_Date')->get(),
-            'petugasSupir'   => Pegawai::where('Jabatan', 'Supir')->orderBy('Nama_Pegawai')->get(),
+            'petugasPengemudi'   => Pegawai::where('Jabatan', 'Pengemudi')->orderBy('Nama_Pegawai')->get(),
         ];
     }
 }

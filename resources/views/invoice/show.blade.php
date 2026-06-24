@@ -23,8 +23,8 @@
     </div>
 </div>
 
+
 <div class="row g-3">
-    {{-- Invoice utama --}}
     <div class="col-md-8">
         <div class="card mb-3">
             <div class="card-header">
@@ -53,7 +53,6 @@
                     </div>
                 </div>
 
-                {{-- Tabel detail barang dari PO --}}
                 <table class="table table-sm" style="font-size:.85rem;">
                     <thead>
                         <tr>

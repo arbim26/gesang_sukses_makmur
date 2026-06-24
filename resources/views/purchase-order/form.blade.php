@@ -2,10 +2,12 @@
 @section('title', isset($po) ? 'Edit Purchase Order' : 'Buat Purchase Order')
 @section('page-title', isset($po) ? 'Edit Purchase Order' : 'Buat Purchase Order Baru')
 
+@php
 $jabatanAktif = auth('pegawai')->user()->Jabatan;
 @endphp
 
 @section('content')
+
 <div class="mb-3">
     <a href="{{ route('purchase-order.index') }}" class="text-muted" style="font-size:.85rem;text-decoration:none;">
         <i class="bi bi-arrow-left me-1"></i> Kembali ke daftar

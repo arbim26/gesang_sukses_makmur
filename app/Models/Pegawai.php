@@ -33,7 +33,7 @@ class Pegawai extends Authenticatable
     public function getJWTCustomClaims()
     {
         return [
-            'jabatan' => $this->Jabatan, // Menyimpan nilai seperti 'Direksi', 'Manajer', dll.
+            'jabatan' => $this->Jabatan,
         ];
     }
 

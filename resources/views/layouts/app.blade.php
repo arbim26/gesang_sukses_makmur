@@ -246,7 +246,7 @@
         @endif
 
         {{-- Surat Jalan: Untuk Pengemudi, Staf, Manajer, Direksi --}}
-        @if(in_array($jabatan, ['Pengemudi', 'Staf', 'Manajer', 'Direksi']))
+        @if(in_array($jabatan, ['Pengemudi', 'Sekretaris', 'Manajer', 'Direksi']))
             <a href="{{ route('surat-jalan.index') }}"
                class="nav-link {{ request()->routeIs('surat-jalan.*') ? 'active' : '' }}">
                 <i class="bi bi-truck"></i> Surat Jalan

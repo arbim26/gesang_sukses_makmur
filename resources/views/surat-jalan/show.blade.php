@@ -8,10 +8,10 @@
         <i class="bi bi-arrow-left me-1"></i> Kembali ke daftar
     </a>
     <div class="d-flex gap-2">
-        <a href="{{ route('surat-jalan.edit', $suratJalan->No_SJ) }}" class="btn btn-sm btn-outline-secondary">
+        <a href="{{ route('surat-jalan.edit', encode_id($suratJalan->No_SJ)) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-pencil me-1"></i> Edit
         </a>
-        <a href="{{ route('surat-jalan.print', $suratJalan->No_SJ) }}" class="btn btn-sm btn-outline-secondary">
+        <a href="{{ route('surat-jalan.print', encode_id($suratJalan->No_SJ)) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-printer me-1"></i> Cetak
         </a>
     </div>
