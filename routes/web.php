@@ -7,7 +7,6 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\RekeningController;
 use App\Http\Controllers\PurchaseOrderController;
-use App\Http\Controllers\DetailInvoiceController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\SuratJalanController;
@@ -41,10 +40,9 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::resource('purchase-order', PurchaseOrderController::class);
         Route::get('purchase-order/{purchase_order}/detail/create',  [PurchaseOrderController::class, 'detailCreate'])->name('purchase-order.detail.create');
         Route::post('purchase-order/{purchase_order}/detail',        [PurchaseOrderController::class, 'detailStore'])->name('purchase-order.detail.store');
+        Route::post('purchase-order/{purchase_order}/detail/{detail}',[PurchaseOrderController::class, 'detailUpdate'])->name('purchase-order.detail.update');
         Route::delete('purchase-order/{purchase_order}/detail/{detail}', [PurchaseOrderController::class, 'detailDestroy'])->name('purchase-order.detail.destroy');
-        
         Route::resource('invoice', InvoiceController::class);
-        Route::resource('detail-invoice', DetailInvoiceController::class);
         Route::get('invoice/{invoice}/print', [InvoiceController::class, 'print'])->name('invoice.print');
     });
 

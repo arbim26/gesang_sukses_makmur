@@ -215,6 +215,7 @@
                                     class="btn btn-sm btn-outline-primary me-1">
                                      <i class="bi bi-eye"></i>
                                  </a>
+                                 
                                  @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                                     @if(!$inv->No_SJ->count())
                                         <a href="{{ route('invoice.edit', encode_id($inv->No_Invoice)) }}"

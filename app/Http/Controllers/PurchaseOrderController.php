@@ -8,6 +8,7 @@ use App\Models\DetailInvoice;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PurchaseOrderController extends Controller
 {
@@ -55,7 +56,7 @@ class PurchaseOrderController extends Controller
             ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
     }
 
-    public function show(string $id)
+    public function show(string $hash)
     {
         $po = PurchaseOrder::with([
             'customer',
@@ -64,28 +65,28 @@ class PurchaseOrderController extends Controller
             'invoices.ceo',
             'invoices.sekretaris',
             'suratJalan.supir',
-        ])->findOrFail($id);
+        ])->findOrFail(decode_id($hash));
 
         $barangs = Barang::orderBy('Nama_Barang')->get();
 
         return view('purchase-order.show', compact('po', 'barangs'));
     }
 
-    public function edit(string $id)
+    public function edit(string $hash)
     {
-        $po = PurchaseOrder::with('details')->findOrFail($id);
+        $po = PurchaseOrder::with('details')->findOrFail(decode_id($hash));
 
         if ($po->invoices()->exists()) {
-            return redirect()->route('purchase-order.show', $id)
+            return redirect()->route('purchase-order.show', $hash)
                 ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
         }
 
         return view('purchase-order.form', array_merge(compact('po'), $this->formData()));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $hash)
     {
-        $po = PurchaseOrder::findOrFail($id);
+        $po = PurchaseOrder::findOrFail(decode_id($hash));
 
         $request->validate([
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -111,9 +112,9 @@ class PurchaseOrderController extends Controller
             ->with('success', 'Purchase Order berhasil diperbarui.');
     }
 
-    public function destroy(string $id)
+    public function destroy(string $hash)
     {
-        $po = PurchaseOrder::withCount(['invoices', 'suratJalan'])->findOrFail($id);
+        $po = PurchaseOrder::withCount(['invoices', 'suratJalan'])->findOrFail(decode_id($hash));
 
         if ($po->invoices_count > 0 || $po->surat_jalan_count > 0) {
             return redirect()->route('purchase-order.index')
@@ -158,8 +159,45 @@ class PurchaseOrderController extends Controller
 
         $this->recalcPO($po);
 
-        return redirect()->route('purchase-order.show', $id)
-            ->with('success', 'Barang "'.$barang->Nama_Barang.'" berhasil ditambahkan.');
+        return redirect()->back()->with('success', 'Barang "'.$barang->Nama_Barang.'" berhasil ditambahkan.');
+    }
+
+    public function detailUpdate(Request $request, string $id, int $detailId)
+    {
+        // dd("peler");
+        $po = PurchaseOrder::where('No_PO', decode_id($id))->firstOrFail();
+
+        $detail = DetailInvoice::where('id', (int)$detailId)
+            ->where('No_PO', $po->No_PO)
+            ->firstOrFail();
+    
+        if ($po->invoices()->exists()) {
+            return redirect()->route('purchase-order.show', $po->No_PO)
+                ->with('error', 'Purchase Order yang sudah memiliki Invoice tidak dapat diubah.');
+        }
+    
+        $request->validate([
+            'No_Barang'  => 'required|exists:barangs,Kode_Barang',
+            'Qty'        => 'required|numeric|min:1',
+            'Unit_Price' => 'required|numeric|min:0',
+            'Metode'     => 'nullable|string|max:100',
+        ]);
+    
+        $detail = DetailInvoice::where('id', $detailId)
+            ->where('No_PO', $po->No_PO)
+            ->firstOrFail();
+    
+        $detail->update([
+            'No_Barang'  => $request->No_Barang,
+            'Qty'        => $request->Qty,
+            'Unit_Price' => $request->Unit_Price,
+            'Amount'     => $request->Qty * $request->Unit_Price,
+            'Metode'     => $request->Metode,
+        ]);
+    
+        $this->recalcPO($po);
+    
+        return redirect()->back()->with('success', 'Detail barang berhasil diperbarui.');
     }
 
     public function detailDestroy(string $id, int $detailId)
@@ -175,9 +213,9 @@ class PurchaseOrderController extends Controller
 
         $this->recalcPO($po);
 
-        return redirect()->route('purchase-order.show', $id)
-            ->with('success', 'Detail barang berhasil dihapus.');
+        return redirect()->back()->with('success', 'Detail barang berhasil dihapus.');
     }
+
 
     private function recalcPO(PurchaseOrder $po): void
     {

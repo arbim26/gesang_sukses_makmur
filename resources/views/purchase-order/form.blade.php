@@ -14,7 +14,7 @@ $jabatanAktif = auth('pegawai')->user()->Jabatan;
     </a>
 </div>
 
-<form action="{{ isset($po) ? route('purchase-order.update', $po->No_PO) : route('purchase-order.store') }}"
+<form action="{{ isset($po) ? route('purchase-order.update', encode_id($po->No_PO)) : route('purchase-order.store') }}"
       method="POST" enctype="multipart/form-data">
     @csrf
     @if(isset($po)) @method('PUT') @endif

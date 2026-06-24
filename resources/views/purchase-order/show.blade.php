@@ -18,22 +18,12 @@
             <i class="bi bi-pencil me-1"></i> Edit PO
         </a>
         @endif
-        @if($po->invoices->count() && !$po->suratJalan)
-        <a href="{{ route('surat-jalan.create') }}" class="btn btn-sm btn-accent">
-            <i class="bi bi-truck me-1"></i> Buat Surat Jalan
-        </a>
-        @endif
-        @if(!$po->invoices->count())
-        <a href="{{ route('invoice.create') }}" class="btn btn-sm btn-accent">
-            <i class="bi bi-receipt me-1"></i> Buat Invoice
-        </a>
-        @endif
     </div>
     @endif
 </div>
 
 <div class="row g-3">
-    {{-- ── Kolom Kiri: Info PO ─────────────────────────────── --}}
+
     <div class="col-md-4">
         <div class="card mb-3">
             <div class="card-header"><span><i class="bi bi-file-earmark-text me-2"></i>Info Purchase Order</span></div>
@@ -92,10 +82,8 @@
         </div>
     </div>
 
-    {{-- ── Kolom Kanan: Detail & Transaksi ─────────────────── --}}
     <div class="col-md-8">
 
-        {{-- Detail Barang ─────────────────────────────────── --}}
         <div class="card mb-3">
             <div class="card-header">
                 <span><i class="bi bi-list-ul me-2"></i>Detail Barang</span>
@@ -125,7 +113,7 @@
                         @forelse($po->details as $d)
                         <tr id="row-{{ $d->id }}">
                             <td style="font-size:.875rem;">
-                                <div style="font-weight:500;">{{ $d->barang->Nama_Barang ?? $d->No_Barang }}</div>
+                                <div style="font-weight:500;">{{$d->barang->Nama_Barang ?? $d->No_Barang }}</div>
                                 <code style="font-size:.7rem;color:var(--text-muted);">{{ $d->No_Barang }}</code>
                             </td>
                             <td class="text-center">{{ $d->Qty }}</td>
@@ -138,9 +126,10 @@
                             </td>
                             @if(!$po->invoices->count())
                             <td>
-                                {{-- Tombol Edit --}}
+
                                 <button class="btn btn-sm btn-outline-secondary me-1 btn-edit-detail"
                                         data-id="{{ $d->id }}"
+                                        data-po-id="{{ encode_id($po->No_PO) }}" 
                                         data-barang="{{ $d->No_Barang }}"
                                         data-nama="{{ $d->barang->Nama_Barang ?? $d->No_Barang }}"
                                         data-qty="{{ $d->Qty }}"
@@ -149,7 +138,7 @@
                                         title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                {{-- Tombol Hapus --}}
+
                                 <form action="{{ route('purchase-order.detail.destroy', [$po->No_PO, $d->id]) }}"
                                       method="POST" class="d-inline"
                                       onsubmit="return confirm('Hapus barang ini dari PO?')">
@@ -175,7 +164,6 @@
             </div>
         </div>
 
-        {{-- Invoice terkait --}}
         <div class="card mb-3">
             <div class="card-header">
                 <span><i class="bi bi-receipt me-2"></i>Invoice</span>
@@ -213,7 +201,7 @@
             </div>
         </div>
 
-        {{-- Surat Jalan --}}
+
         <div class="card">
             <div class="card-header">
                 <span><i class="bi bi-truck me-2"></i>Surat Jalan</span>
@@ -247,12 +235,10 @@
                 @endif
             </div>
         </div>
-    </div>{{-- /col-md-8 --}}
+    </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════
-     MODAL: Tambah Barang
-═══════════════════════════════════════════════════════════ --}}
+
 @if(!$po->invoices->count())
 <div class="modal fade" id="modalTambah" tabindex="-1" aria-labelledby="modalTambahLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -285,7 +271,7 @@
                     </div>
 
                     <div class="row g-3 mb-3">
-                        {{-- Qty --}}
+
                         <div class="col-5">
                             <label class="form-label">Qty <span class="text-danger">*</span></label>
                             <div class="input-group">
@@ -295,7 +281,7 @@
                                       style="font-size:.8rem;border-color:var(--border);">pcs</span>
                             </div>
                         </div>
-                        {{-- Unit Price (readonly, dari master) --}}
+
                         <div class="col-7">
                             <label class="form-label">Unit Price</label>
                             <div class="input-group">
@@ -307,7 +293,6 @@
                         </div>
                     </div>
 
-                    {{-- Metode --}}
                     <div class="mb-3">
                         <label class="form-label">Metode Pengerjaan <span class="text-danger">*</span></label>
                         <input type="text" name="Metode" id="inpMetodeTambah"
@@ -315,7 +300,6 @@
                                required>
                     </div>
 
-                    {{-- Preview Amount --}}
                     <div class="p-3 rounded" style="background:var(--surface);border:1px solid var(--border);">
                         <div class="d-flex justify-content-between">
                             <span class="text-muted" style="font-size:.85rem;">Subtotal Baris</span>
@@ -334,24 +318,22 @@
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════
-     MODAL: Edit Detail
-═══════════════════════════════════════════════════════════ --}}
+
 <div class="modal fade" id="modalEdit" tabindex="-1" aria-labelledby="modalEditLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius:12px;border:1px solid var(--border);">
             <div class="modal-header" style="border-bottom:1px solid var(--border);">
                 <h6 class="modal-title" id="modalEditLabel" style="font-weight:600;">
-                    <i class="bi bi-pencil me-2" style="color:var(--accent);"></i>
+                    <i class="bi bi-pencipl me-2" style="color:var(--accent);"></i>
                     Edit Detail Barang
                 </h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="formEdit" method="POST">
-                @csrf @method('PUT')
+                @csrf
+                
                 <div class="modal-body p-4">
 
-                    {{-- Nama barang (readonly) --}}
                     <div class="mb-3">
                         <label class="form-label">Barang</label>
                         <input type="text" id="editNamaBarang" class="form-control"
@@ -380,7 +362,7 @@
                         </div>
                     </div>
 
-                    {{-- Metode --}}
+
                     <div class="mb-3">
                         <label class="form-label">Metode Pengerjaan <span class="text-danger">*</span></label>
                         <input type="text" name="Metode" id="editMetode"
@@ -388,7 +370,6 @@
                                required>
                     </div>
 
-                    {{-- Preview Amount --}}
                     <div class="p-3 rounded" style="background:var(--surface);border:1px solid var(--border);">
                         <div class="d-flex justify-content-between">
                             <span class="text-muted" style="font-size:.85rem;">Subtotal Baris</span>
@@ -468,24 +449,24 @@ if (document.getElementById('editQty')) {
 
 document.querySelectorAll('.btn-edit-detail').forEach(btn => {
     btn.addEventListener('click', function () {
-        const id     = this.dataset.id;
-        const barang = this.dataset.barang;
-        const nama   = this.dataset.nama;
-        const qty    = this.dataset.qty;
-        const price  = this.dataset.price;
-        const metode = this.dataset.metode;
+        const detailId = this.dataset.id;       
+        const poId     = this.dataset.poId;     
+        const barang   = this.dataset.barang;
+        const nama     = this.dataset.nama;
+        const qty      = this.dataset.qty;
+        const price    = this.dataset.price;
+        const metode   = this.dataset.metode;
 
-        // Set action form ke detail-invoice/{id} (PUT)
-        document.getElementById('formEdit').action = '/detail-invoice/' + id;
+        // Set action form dengan poId dan detailId
+        document.getElementById('formEdit').action =
+    '/purchase-order/' + poId + '/detail/' + detailId;
 
         document.getElementById('editNamaBarang').value = nama;
         document.getElementById('editNoBarang').value   = barang;
         document.getElementById('editQty').value        = qty;
         document.getElementById('editPrice').value      = price;
+        document.getElementById('editMetode').value     = metode;
 
-        document.getElementById('editMetode').value = metode;
-
-        // Hitung amount
         document.getElementById('lblAmountEdit').textContent =
             'Rp ' + fmt(parseFloat(qty) * parseFloat(price));
 

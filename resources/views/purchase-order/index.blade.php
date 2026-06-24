@@ -229,7 +229,7 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('purchase-order.show', $po->No_PO) }}"
+                            <a href="{{ route('purchase-order.show', encode_id($po->No_PO)) }}"
                                class="btn btn-sm btn-outline-primary me-1 mb-1"
                                title="Lihat Detail">
                                 <i class="bi bi-eye"></i>
@@ -252,7 +252,7 @@
 
                             @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                                 @if(!$po->invoices->count())
-                                <a href="{{ route('purchase-order.edit', $po->No_PO) }}"
+                                <a href="{{ route('purchase-order.edit', encode_id($po->No_PO)) }}"
                                    class="btn btn-sm btn-outline-secondary me-1 mb-1"
                                    title="Edit">
                                     <i class="bi bi-pencil"></i>
