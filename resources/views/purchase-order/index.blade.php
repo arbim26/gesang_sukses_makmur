@@ -12,9 +12,11 @@
     <p class="text-muted mb-0" style="font-size:.85rem;">
         Total <strong>{{ $purchaseOrders->total() }}</strong> purchase order
     </p>
+    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
     <a href="{{ route('purchase-order.create') }}" class="btn btn-accent">
         <i class="bi bi-plus-lg me-1"></i> Buat PO
     </a>
+    @endif
 </div>
 
 <div class="card">
@@ -61,11 +63,6 @@
                            title="Lihat Detail">
                             <i class="bi bi-eye"></i>
                         </a>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
 
                         @if($po->attachment)
                             @php
@@ -83,10 +80,6 @@
                         @endif
 
                         @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
-<<<<<<< HEAD
->>>>>>> f51e716 (add JWT and Multi Role)
-=======
->>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
                         @if(!$po->invoices->count())
                         <a href="{{ route('purchase-order.edit', $po->No_PO) }}"
                            class="btn btn-sm btn-outline-secondary me-1 mb-1"

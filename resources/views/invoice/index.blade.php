@@ -12,9 +12,11 @@
     <p class="text-muted mb-0" style="font-size:.85rem;">
         Total <strong>{{ $invoices->total() }}</strong> invoice
     </p>
+    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
     <a href="{{ route('invoice.create') }}" class="btn btn-accent">
         <i class="bi bi-plus-lg me-1"></i> Buat Invoice
     </a>
+    @endif
 </div>
 
 <div class="card">

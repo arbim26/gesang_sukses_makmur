@@ -11,9 +11,11 @@
     <p class="text-muted mb-0" style="font-size:.85rem;">
         Total <strong>{{ $rekenings->total() }}</strong> rekening terdaftar
     </p>
+    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
     <a href="{{ route('rekening.create') }}" class="btn btn-accent">
         <i class="bi bi-plus-lg me-1"></i> Tambah Rekening
     </a>
+    @endif
 </div>
 
 <div class="card">

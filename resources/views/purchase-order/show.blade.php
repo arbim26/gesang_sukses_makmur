@@ -2,11 +2,16 @@
 @section('title', 'Detail PO ' . $po->No_PO)
 @section('page-title', 'Detail Purchase Order')
 
+@php
+    $jabatanAktif = auth('pegawai')->user()->Jabatan;
+@endphp
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <a href="{{ route('purchase-order.index') }}" class="text-muted" style="font-size:.85rem;text-decoration:none;">
         <i class="bi bi-arrow-left me-1"></i> Kembali ke daftar
     </a>
+    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
     <div class="d-flex gap-2">
         @if(!$po->invoices->count())
         <a href="{{ route('purchase-order.edit', $po->No_PO) }}" class="btn btn-sm btn-outline-secondary">
@@ -24,6 +29,7 @@
         </a>
         @endif
     </div>
+    @endif
 </div>
 
 <div class="row g-3">
@@ -93,10 +99,12 @@
         <div class="card mb-3">
             <div class="card-header">
                 <span><i class="bi bi-list-ul me-2"></i>Detail Barang</span>
+                @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                 @if(!$po->invoices->count())
                 <button class="btn btn-sm btn-accent" data-bs-toggle="modal" data-bs-target="#modalTambah">
                     <i class="bi bi-plus-lg me-1"></i> Tambah Barang
                 </button>
+                @endif
                 @endif
             </div>
             <div class="card-body p-0">
@@ -171,10 +179,12 @@
         <div class="card mb-3">
             <div class="card-header">
                 <span><i class="bi bi-receipt me-2"></i>Invoice</span>
+                @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                 @if(!$po->invoices->count())
                 <a href="{{ route('invoice.create') }}" class="btn btn-sm btn-accent">
                     <i class="bi bi-plus-lg me-1"></i> Buat Invoice
                 </a>
+                @endif
                 @endif
             </div>
             <div class="card-body p-0">

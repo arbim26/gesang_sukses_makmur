@@ -11,9 +11,11 @@
     <p class="text-muted mb-0" style="font-size:.85rem;">
         Total <strong>{{ $suratJalans->total() }}</strong> surat jalan
     </p>
+    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
     <a href="{{ route('surat-jalan.create') }}" class="btn btn-accent">
         <i class="bi bi-plus-lg me-1"></i> Buat Surat Jalan
     </a>
+    @endif
 </div>
 
 <div class="card">

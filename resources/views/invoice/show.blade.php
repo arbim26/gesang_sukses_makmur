@@ -2,15 +2,21 @@
 @section('title', 'Invoice ' . $invoice->No_Invoice)
 @section('page-title', 'Detail Invoice')
 
+@php
+    $jabatanAktif = auth('pegawai')->user()->Jabatan;
+@endphp
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <a href="{{ route('invoice.index') }}" class="text-muted" style="font-size:.85rem;text-decoration:none;">
         <i class="bi bi-arrow-left me-1"></i> Kembali ke daftar
     </a>
     <div class="d-flex gap-2">
+        @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
         <a href="{{ route('invoice.edit', $invoice->No_Invoice) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-pencil me-1"></i> Edit
         </a>
+        @endif
         <a href="{{ route('invoice.print', $invoice->No_Invoice) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-printer me-1"></i> Cetak
         </a>

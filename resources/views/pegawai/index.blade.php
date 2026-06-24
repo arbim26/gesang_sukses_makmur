@@ -11,9 +11,11 @@
     <p class="text-muted mb-0" style="font-size:.85rem;">
         Total <strong>{{ $pegawais->total() }}</strong> pegawai terdaftar
     </p>
+    @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
     <a href="{{ route('pegawai.create') }}" class="btn btn-accent">
         <i class="bi bi-plus-lg me-1"></i> Tambah Pegawai
     </a>
+    @endif
 </div>
 
 <div class="card">
@@ -37,26 +39,11 @@
                     <td>
                         @php
                             $colors = [
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                'CEO'        => 'background:#fef3c7;color:#d97706;',
-                                'Sekretaris' => 'background:#eef2ff;color:#4f46e5;',
-                                'Supir'      => 'background:#ecfdf5;color:#059669;',
-                                'Staff'      => 'background:#f3f4f6;color:#374151;',
-=======
                                 'Direksi'    => 'background:#fef3c7;color:#d97706;', 
                                 'Manajer'    => 'background:#fae8ff;color:#a21caf;',
                                 'Sekretaris' => 'background:#eef2ff;color:#4f46e5;',
                                 'Staf'       => 'background:#f3f4f6;color:#374151;',
                                 'Pengemudi'  => 'background:#ecfdf5;color:#059669;',
->>>>>>> f51e716 (add JWT and Multi Role)
-=======
-                                'Direksi'    => 'background:#fef3c7;color:#d97706;', 
-                                'Manajer'    => 'background:#fae8ff;color:#a21caf;',
-                                'Sekretaris' => 'background:#eef2ff;color:#4f46e5;',
-                                'Staf'       => 'background:#f3f4f6;color:#374151;',
-                                'Pengemudi'  => 'background:#ecfdf5;color:#059669;',
->>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
                             ];
                         @endphp
                         <span class="badge-pill" style="{{ $colors[$p->Jabatan] ?? 'background:#f3f4f6;color:#374151;' }}">
@@ -69,19 +56,6 @@
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>
                         </a>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <form action="{{ route('pegawai.destroy', $p->Id_Pegawai) }}"
-                              method="POST" class="d-inline"
-                              onsubmit="return confirm('Hapus pegawai ini?')">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash3"></i>
-                            </button>
-                        </form>
-=======
-=======
->>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
                         @if(auth()->check() && auth()->user()->Id_Pegawai === $p->Id_Pegawai)
                             <span class="badge bg-light text-muted small" style="padding: 5px 10px; border: 1px solid var(--border);">
                                 <i class="bi bi-person-fill-lock me-1"></i> Anda
@@ -96,10 +70,6 @@
                                 </button>
                             </form>
                         @endif
-<<<<<<< HEAD
->>>>>>> f51e716 (add JWT and Multi Role)
-=======
->>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
                     </td>
                     @endif
                 </tr>
