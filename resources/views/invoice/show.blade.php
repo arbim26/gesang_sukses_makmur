@@ -136,10 +136,12 @@
         <div class="card">
             <div class="card-header">
                 <span><i class="bi bi-truck me-1"></i>Surat Jalan</span>
+                @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                 @if(!$invoice->purchaseOrder->suratJalan)
                 <a href="{{ route('surat-jalan.create') }}" class="btn btn-sm btn-accent" style="font-size:.7rem;padding:.25rem .6rem;">
                     <i class="bi bi-plus-lg"></i> Buat SJ
                 </a>
+                @endif
                 @endif
             </div>
             <div class="card-body p-3" style="font-size:.875rem;">

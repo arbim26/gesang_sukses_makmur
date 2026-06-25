@@ -14,7 +14,7 @@
     @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
     <div class="d-flex gap-2">
         @if(!$po->invoices->count())
-        <a href="{{ route('purchase-order.edit', encode_id($po->No_PO)) }}" class="btn btn-sm btn-outline-secondary">
+        <a href="{{ route('purchase-order.edit', ($po->No_PO)) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-pencil me-1"></i> Edit PO
         </a>
         @endif
@@ -125,6 +125,7 @@
                                 </span>
                             </td>
                             @if(!$po->invoices->count())
+                            @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                             <td>
 
                                 <button class="btn btn-sm btn-outline-secondary me-1 btn-edit-detail"
@@ -148,6 +149,7 @@
                                     </button>
                                 </form>
                             </td>
+                            @endif
                             @endif
                         </tr>
                         @empty

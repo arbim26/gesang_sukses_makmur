@@ -17,8 +17,8 @@
             </div>
             <div class="card-body p-4">
                 <form action="{{ isset($pegawai)
-                    ? route('pegawai.update', encode_id($pegawai->Id_Pegawai))
-                    : route('pegawai.store') }}"
+                    ? route('pegawai.update', ($pegawai->Id_Pegawai))
+                    : route('pegawai.store') }}"encode_id
                     method="POST">
                     @csrf
                     @if(isset($pegawai)) @method('PUT') @endif
