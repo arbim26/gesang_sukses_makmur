@@ -15,7 +15,7 @@
                 <span>{{ isset($barang) ? 'Edit Data Barang' : 'Formulir Barang Baru' }}</span>
             </div>
             <div class="card-body p-4">
-                <form action="{{ isset($barang) ? route('barang.update', $barang->Kode_Barang) : route('barang.store') }}"
+                <form action="{{ isset($barang) ? route('barang.update', encode_id($barang->Kode_Barang)) : route('barang.store') }}"
                       method="POST">
                     @csrf
                     @if(isset($barang)) @method('PUT') @endif

@@ -39,17 +39,7 @@
                     <td>{{ $c->PIC }}</td>
                     @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                     <td>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <a href="{{ route('customer.show', $c->Id_Cust) }}"
-                           class="btn btn-sm btn-outline-primary me-1">
-                            <i class="bi bi-eye"></i>
-                        </a>
-=======
->>>>>>> f51e716 (add JWT and Multi Role)
-=======
->>>>>>> 295042f63e0e6b961cd858a8aef381f99c0de7e1
-                        <a href="{{ route('customer.edit', $c->Id_Cust) }}"
+                        <a href="{{ route('customer.edit',  encode_id($c->Id_Cust)) }}"
                            class="btn btn-sm btn-outline-secondary me-1">
                             <i class="bi bi-pencil"></i>
                         </a>

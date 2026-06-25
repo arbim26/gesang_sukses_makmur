@@ -44,7 +44,7 @@
                         </td>
                         @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
                         <td>
-                            <a href="{{ route('barang.edit', $b->Kode_Barang) }}"
+                            <a href="{{ route('barang.edit',  encode_id($b->Kode_Barang)) }}"
                                class="btn btn-sm btn-outline-secondary me-1">
                                 <i class="bi bi-pencil"></i>
                             </a>

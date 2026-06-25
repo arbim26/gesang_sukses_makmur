@@ -15,8 +15,7 @@
                 <span>{{ isset($rekening) ? 'Edit Data Rekening' : 'Formulir Rekening Baru' }}</span>
             </div>
             <div class="card-body p-4">
-                <form action="{{ isset($rekening)
-                    ? route('rekening.update', $rekening->Acc_No)
+                <form action="{{ isset($rekening)? route('rekening.update', encode_id($rekening->Acc_No))
                     : route('rekening.store') }}"
                     method="POST">
                     @csrf

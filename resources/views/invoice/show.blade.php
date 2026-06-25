@@ -15,6 +15,13 @@
         <a href="{{ route('invoice.print', encode_id($invoice->No_Invoice)) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-printer me-1"></i> Cetak
         </a>
+        @if(in_array($jabatanAktif, ['Sekretaris', 'Staf', 'Manajer']))
+            @if(!$invoice->No_SJ->count())
+            <a href="{{ route('invoice.edit', encode_id($invoice->No_Invoice)) }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-pencil me-1"></i> Edit PO
+            </a>
+            @endif
+        @endif
     </div>
 </div>
 

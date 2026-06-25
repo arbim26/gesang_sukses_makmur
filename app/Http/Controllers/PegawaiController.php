@@ -60,13 +60,13 @@ class PegawaiController extends Controller
         return view('pegawai.show', compact('pegawai'));
     }
 
-    public function edit(string $id)
+    public function edit(string $hash)
     {
-        $pegawai = Pegawai::findOrFail($id);
+        $pegawai = Pegawai::findOrFail(decode_id($hash));
         return view('pegawai.form', compact('pegawai'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $hash)
     {
         $request->validate([
             'Nama_Pegawai' => 'required|max:100',
@@ -74,7 +74,7 @@ class PegawaiController extends Controller
             'Jabatan'      => 'required|in:Staf IT,Direksi,Manajer,Sekretaris,Bendahara,Staf,Pengemudi',
         ]);
 
-        $pegawai = Pegawai::findOrFail($id);
+        $pegawai = Pegawai::findOrFail(decode_id($hash));
         
         $data = $request->only('Nama_Pegawai', 'Jabatan');
         
@@ -91,7 +91,6 @@ class PegawaiController extends Controller
 
     public function destroy(string $id)
     {
-        // Proteksi Utama Backend: Cek jika ID yang akan dihapus adalah user yang sedang login
         if (auth()->check() && $id === auth()->user()->Id_Pegawai) {
             return redirect()->route('pegawai.index')
                 ->with('error', 'Anda tidak diperbolehkan menghapus akun Anda sendiri yang sedang aktif digunakan.');

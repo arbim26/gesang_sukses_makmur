@@ -32,26 +32,20 @@ class RekeningController extends Controller
             ->with('success', 'Rekening berhasil ditambahkan.');
     }
 
-    public function show(string $id)
+    public function edit(string $hash)
     {
-        $rekening = Rekening::findOrFail($id);
-        return view('rekening.show', compact('rekening'));
-    }
-
-    public function edit(string $id)
-    {
-        $rekening = Rekening::findOrFail($id);
+        $rekening = Rekening::findOrFail(decode_id($hash));
         return view('rekening.form', compact('rekening'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $hash)
     {
         $request->validate([
             'Bank' => 'required|max:100',
             'Nama' => 'required|max:100',
         ]);
 
-        Rekening::findOrFail($id)->update($request->only('Bank', 'Nama'));
+        Rekening::findOrFail(decode_id($hash))->update($request->only('Bank', 'Nama'));
 
         return redirect()->route('rekening.index')
             ->with('success', 'Rekening berhasil diperbarui.');

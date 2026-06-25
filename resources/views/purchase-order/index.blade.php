@@ -58,7 +58,6 @@
                            style="border-color:var(--border);">
                 </div>
 
-                {{-- Filter: Sampai Tanggal PO --}}
                 <div class="col-md-2">
                     <label class="form-label text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;">
                         PO Sampai
@@ -68,7 +67,6 @@
                            style="border-color:var(--border);">
                 </div>
 
-                {{-- Filter: Dari Delivery Date --}}
                 <div class="col-md-2">
                     <label class="form-label text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;">
                         Delivery Dari
@@ -78,7 +76,6 @@
                            style="border-color:var(--border);">
                 </div>
 
-                {{-- Filter: Sampai Delivery Date --}}
                 <div class="col-md-2">
                     <label class="form-label text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;">
                         Delivery Sampai
@@ -88,7 +85,6 @@
                            style="border-color:var(--border);">
                 </div>
 
-                {{-- Tombol aksi --}}
                 <div class="col-md-1 d-flex gap-1">
                     <button type="submit" class="btn btn-sm btn-accent w-100" title="Terapkan Filter">
                         <i class="bi bi-funnel-fill"></i>

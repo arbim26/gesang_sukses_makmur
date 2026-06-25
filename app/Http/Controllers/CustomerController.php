@@ -39,20 +39,20 @@ class CustomerController extends Controller
         return view('customer.show', compact('customer'));
     }
 
-    public function edit(string $id)
+    public function edit(string $hash)
     {
-        $customer = Customer::findOrFail($id);
+        $customer = Customer::findOrFail(decode_id($hash));
         return view('customer.form', compact('customer'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $hash)
     {
         $request->validate([
             'Nama' => 'required|max:100',
             'PIC'  => 'required|max:100',
         ]);
 
-        Customer::findOrFail($id)->update($request->only('Nama', 'PIC'));
+        Customer::findOrFail(decode_id($hash))->update($request->only('Nama', 'PIC'));
 
         return redirect()->route('customer.index')
             ->with('success', 'Customer berhasil diperbarui.');

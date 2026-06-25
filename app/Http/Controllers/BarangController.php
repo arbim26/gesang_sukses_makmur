@@ -40,13 +40,13 @@ class BarangController extends Controller
         return view('barang.show', compact('barang'));
     }
 
-    public function edit(string $id)
+    public function edit(string $hash)
     {
-        $barang = Barang::findOrFail($id);
+        $barang = Barang::findOrFail(decode_id($hash));
         return view('barang.form', compact('barang'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $hash)
     {
         $request->validate([
             'Nama_Barang' => 'required|max:100',
@@ -55,7 +55,7 @@ class BarangController extends Controller
             'Unit_Means'  => 'nullable|max:20',
         ]);
 
-        Barang::findOrFail($id)->update(
+        Barang::findOrFail(decode_id($hash))->update(
             $request->only('Nama_Barang', 'Jenis', 'Unit_Price', 'Unit_Means')
         );
 

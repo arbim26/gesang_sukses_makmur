@@ -39,25 +39,6 @@
 
 @section('content')
 <div class="container-fluid">
-    {{-- Tombol Aksi Cepat (Quick Action) --}}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex flex-wrap gap-2">
-                <a href="{{ route('invoice.create') }}" class="btn btn-primary quick-btn" style="background:#4f46e5; border-color:#4f46e5;">
-                    <i class="fas fa-plus-circle"></i> Buat Invoice
-                </a>
-                <a href="{{ route('surat-jalan.create') }}" class="btn btn-info quick-btn" style="background:#0891b2; border-color:#0891b2;">
-                    <i class="fas fa-truck"></i> Tambah Surat Jalan
-                </a>
-                <a href="{{ route('customer.create') }}" class="btn btn-success quick-btn" style="background:#059669; border-color:#059669;">
-                    <i class="fas fa-user-plus"></i> Tambah Customer
-                </a>
-                <a href="{{ route('barang.create') }}" class="btn btn-warning quick-btn" style="background:#d97706; border-color:#d97706; color:#fff;">
-                    <i class="fas fa-box"></i> Tambah Barang
-                </a>
-            </div>
-        </div>
-    </div>
 
     {{-- Info Box (Statistik) --}}
     <div class="row mb-4">
