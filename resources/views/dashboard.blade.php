@@ -128,7 +128,7 @@
                             @forelse($recentInvoices as $inv)
                             <tr>
                                 <td>
-                                    <a href="{{ route('invoice.show', $inv->No_Invoice) }}" class="text-primary">
+                                    <a href="{{ route('invoice.show', encode_id($inv->No_Invoice)) }}" class="text-primary">
                                         {{ $inv->No_Invoice }}
                                     </a>
                                 </td>
